@@ -3,12 +3,12 @@ chrome.runtime.onInstalled.addListener(() => {
   chrome.contextMenus.create({
     id: "translateToHinglish",
     title: "Translate to Hinglish",
-    contexts: ["selection"]
+    contexts: ["selection"],
   });
   chrome.contextMenus.create({
     id: "explainInHinglish",
     title: "Explain in Hinglish",
-    contexts: ["selection"]
+    contexts: ["selection"],
   });
 });
 
@@ -17,7 +17,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === "translateText") {
     translateText(request.text)
       .then(sendResponse)
-      .catch(error => {
+      .catch((error) => {
         console.error("Translation error:", error);
         sendResponse("Translation error: " + error.message);
       });
@@ -26,7 +26,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === "explainText") {
     explainText(request.text)
       .then(sendResponse)
-      .catch(error => {
+      .catch((error) => {
         console.error("Explanation error:", error);
         sendResponse("Explanation error: " + error.message);
       });
@@ -41,16 +41,16 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
       chrome.scripting.executeScript({
         target: { tabId: tab.id },
         func: showLoadingPopup,
-        args: []
+        args: [],
       });
 
       const translatedText = await translateText(info.selectionText);
-      
+
       // Remove loading popup and show translation
       chrome.scripting.executeScript({
         target: { tabId: tab.id },
         func: showTranslationPopup,
-        args: [info.selectionText, translatedText]
+        args: [info.selectionText, translatedText],
       });
     } catch (error) {
       console.error("Context menu translation error:", error);
@@ -58,7 +58,7 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
       chrome.scripting.executeScript({
         target: { tabId: tab.id },
         func: showErrorPopup,
-        args: [error.message]
+        args: [error.message],
       });
     }
   } else if (info.menuItemId === "explainInHinglish" && info.selectionText) {
@@ -67,16 +67,16 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
       chrome.scripting.executeScript({
         target: { tabId: tab.id },
         func: showLoadingPopup,
-        args: []
+        args: [],
       });
 
       const explanation = await explainText(info.selectionText);
-      
+
       // Remove loading popup and show explanation
       chrome.scripting.executeScript({
         target: { tabId: tab.id },
         func: showExplanationPopup,
-        args: [info.selectionText, explanation]
+        args: [info.selectionText, explanation],
       });
     } catch (error) {
       console.error("Context menu explanation error:", error);
@@ -84,7 +84,7 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
       chrome.scripting.executeScript({
         target: { tabId: tab.id },
         func: showErrorPopup,
-        args: [error.message]
+        args: [error.message],
       });
     }
   }
@@ -94,30 +94,45 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
 function getTranslationPrompt(style, level) {
   const prompts = {
     hinglish: {
-      balanced: "You are a translator that converts English text to Hinglish (Hindi written in English letters). Keep the meaning exactly the same but make it sound natural in Hinglish. Use a balanced mix of Hindi and English words. Only respond with the translated text, no explanations.",
-      moreHindi: "You are a translator that converts English text to Hinglish (Hindi written in English letters). Keep the meaning exactly the same but make it sound natural in Hinglish. Use more Hindi words than English. Only respond with the translated text, no explanations.",
-      moreEnglish: "You are a translator that converts English text to Hinglish (Hindi written in English letters). Keep the meaning exactly the same but make it sound natural in Hinglish. Use more English words than Hindi. Only respond with the translated text, no explanations."
+      balanced:
+        "You are a translator that converts English text to Hinglish (Hindi written in English letters). Keep the meaning exactly the same but make it sound natural in Hinglish. Use a balanced mix of Hindi and English words. Only respond with the translated text, no explanations.",
+      moreHindi:
+        "You are a translator that converts English text to Hinglish (Hindi written in English letters). Keep the meaning exactly the same but make it sound natural in Hinglish. Use more Hindi words than English. Only respond with the translated text, no explanations.",
+      moreEnglish:
+        "You are a translator that converts English text to Hinglish (Hindi written in English letters). Keep the meaning exactly the same but make it sound natural in Hinglish. Use more English words than Hindi. Only respond with the translated text, no explanations.",
     },
     hindi: {
-      balanced: "You are a translator that converts English text to Hindi (Devanagari script). Keep the meaning exactly the same but make it sound natural in Hindi. Use a balanced mix of formal and colloquial Hindi. Only respond with the translated text, no explanations.",
-      moreHindi: "You are a translator that converts English text to Hindi (Devanagari script). Keep the meaning exactly the same but make it sound natural in Hindi. Use more formal Hindi words. Only respond with the translated text, no explanations.",
-      moreEnglish: "You are a translator that converts English text to Hindi (Devanagari script). Keep the meaning exactly the same but make it sound natural in Hindi. Use more colloquial Hindi words. Only respond with the translated text, no explanations."
+      balanced:
+        "You are a translator that converts English text to Hindi (Devanagari script). Keep the meaning exactly the same but make it sound natural in Hindi. Use a balanced mix of formal and colloquial Hindi. Only respond with the translated text, no explanations.",
+      moreHindi:
+        "You are a translator that converts English text to Hindi (Devanagari script). Keep the meaning exactly the same but make it sound natural in Hindi. Use more formal Hindi words. Only respond with the translated text, no explanations.",
+      moreEnglish:
+        "You are a translator that converts English text to Hindi (Devanagari script). Keep the meaning exactly the same but make it sound natural in Hindi. Use more colloquial Hindi words. Only respond with the translated text, no explanations.",
     },
     roman: {
-      balanced: "You are a translator that converts Hindi text to Romanized Hindi (Hindi written in English letters). Keep the meaning exactly the same but make it sound natural. Use a balanced mix of formal and colloquial words. Only respond with the translated text, no explanations.",
-      moreHindi: "You are a translator that converts Hindi text to Romanized Hindi (Hindi written in English letters). Keep the meaning exactly the same but make it sound natural. Use more formal words. Only respond with the translated text, no explanations.",
-      moreEnglish: "You are a translator that converts Hindi text to Romanized Hindi (Hindi written in English letters). Keep the meaning exactly the same but make it sound natural. Use more colloquial words. Only respond with the translated text, no explanations."
+      balanced:
+        "You are a translator that converts Hindi text to Romanized Hindi (Hindi written in English letters). Keep the meaning exactly the same but make it sound natural. Use a balanced mix of formal and colloquial words. Only respond with the translated text, no explanations.",
+      moreHindi:
+        "You are a translator that converts Hindi text to Romanized Hindi (Hindi written in English letters). Keep the meaning exactly the same but make it sound natural. Use more formal words. Only respond with the translated text, no explanations.",
+      moreEnglish:
+        "You are a translator that converts Hindi text to Romanized Hindi (Hindi written in English letters). Keep the meaning exactly the same but make it sound natural. Use more colloquial words. Only respond with the translated text, no explanations.",
     },
     formal: {
-      balanced: "You are a translator that converts English text to formal Hinglish (Hindi written in English letters). Keep the meaning exactly the same but make it sound professional and formal. Use a balanced mix of Hindi and English words. Only respond with the translated text, no explanations.",
-      moreHindi: "You are a translator that converts English text to formal Hinglish (Hindi written in English letters). Keep the meaning exactly the same but make it sound professional and formal. Use more Hindi words than English. Only respond with the translated text, no explanations.",
-      moreEnglish: "You are a translator that converts English text to formal Hinglish (Hindi written in English letters). Keep the meaning exactly the same but make it sound professional and formal. Use more English words than Hindi. Only respond with the translated text, no explanations."
+      balanced:
+        "You are a translator that converts English text to formal Hinglish (Hindi written in English letters). Keep the meaning exactly the same but make it sound professional and formal. Use a balanced mix of Hindi and English words. Only respond with the translated text, no explanations.",
+      moreHindi:
+        "You are a translator that converts English text to formal Hinglish (Hindi written in English letters). Keep the meaning exactly the same but make it sound professional and formal. Use more Hindi words than English. Only respond with the translated text, no explanations.",
+      moreEnglish:
+        "You are a translator that converts English text to formal Hinglish (Hindi written in English letters). Keep the meaning exactly the same but make it sound professional and formal. Use more English words than Hindi. Only respond with the translated text, no explanations.",
     },
     casual: {
-      balanced: "You are a translator that converts English text to casual Hinglish (Hindi written in English letters). Keep the meaning exactly the same but make it sound casual and conversational. Use a balanced mix of Hindi and English words. Only respond with the translated text, no explanations.",
-      moreHindi: "You are a translator that converts English text to casual Hinglish (Hindi written in English letters). Keep the meaning exactly the same but make it sound casual and conversational. Use more Hindi words than English. Only respond with the translated text, no explanations.",
-      moreEnglish: "You are a translator that converts English text to casual Hinglish (Hindi written in English letters). Keep the meaning exactly the same but make it sound casual and conversational. Use more English words than Hindi. Only respond with the translated text, no explanations."
-    }
+      balanced:
+        "You are a translator that converts English text to casual Hinglish (Hindi written in English letters). Keep the meaning exactly the same but make it sound casual and conversational. Use a balanced mix of Hindi and English words. Only respond with the translated text, no explanations.",
+      moreHindi:
+        "You are a translator that converts English text to casual Hinglish (Hindi written in English letters). Keep the meaning exactly the same but make it sound casual and conversational. Use more Hindi words than English. Only respond with the translated text, no explanations.",
+      moreEnglish:
+        "You are a translator that converts English text to casual Hinglish (Hindi written in English letters). Keep the meaning exactly the same but make it sound casual and conversational. Use more English words than Hindi. Only respond with the translated text, no explanations.",
+    },
   };
 
   return prompts[style][level] || prompts.hinglish.balanced;
@@ -125,49 +140,60 @@ function getTranslationPrompt(style, level) {
 
 // Function to translate text using Groq API
 async function translateText(text) {
-  const { groqApiKey, translationSettings } = await chrome.storage.local.get(['groqApiKey', 'translationSettings']);
-  
+  const { groqApiKey, translationSettings } = await chrome.storage.local.get([
+    "groqApiKey",
+    "translationSettings",
+  ]);
+
   if (!groqApiKey) {
     throw new Error("Please configure your API key first");
   }
 
-  const style = translationSettings?.style || 'hinglish';
-  const level = translationSettings?.level || 'balanced';
+  const style = translationSettings?.style || "hinglish";
+  const level = translationSettings?.level || "balanced";
   const prompt = getTranslationPrompt(style, level);
 
   try {
-    const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${groqApiKey}`
-      },
-      body: JSON.stringify({
-        messages: [{
-          role: "system",
-          content: prompt
-        }, {
-          role: "user",
-          content: text
-        }],
-        model: "meta-llama/llama-4-scout-17b-16e-instruct",
-        temperature: 0.7,
-        max_tokens: 1000
-      })
-    });
-    
+    const response = await fetch(
+      "https://api.groq.com/openai/v1/chat/completions",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${groqApiKey}`,
+        },
+        body: JSON.stringify({
+          messages: [
+            {
+              role: "system",
+              content: prompt,
+            },
+            {
+              role: "user",
+              content: text,
+            },
+          ],
+          model: "meta-llama/llama-4-scout-17b-16e-instruct",
+          temperature: 0.7,
+          max_tokens: 1000,
+        }),
+      }
+    );
+
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
-      throw new Error(errorData.error?.message || `API error: ${response.status}`);
+      throw new Error(
+        errorData.error?.message || `API error: ${response.status}`
+      );
     }
-    
+
     const data = await response.json();
     const translatedText = data.choices[0].message.content.trim();
-    
+
     if (!translatedText) {
       throw new Error("Empty translation received");
     }
-    
+
     return translatedText;
   } catch (error) {
     console.error("Translation error:", error);
@@ -177,53 +203,72 @@ async function translateText(text) {
 
 // Function to explain text using Groq API
 async function explainText(text) {
-  const { groqApiKey, translationSettings } = await chrome.storage.local.get(['groqApiKey', 'translationSettings']);
-  
+  const { groqApiKey, translationSettings } = await chrome.storage.local.get([
+    "groqApiKey",
+    "translationSettings",
+  ]);
+
   if (!groqApiKey) {
     throw new Error("Please configure your API key first");
   }
 
-  const style = translationSettings?.style || 'hinglish';
-  const level = translationSettings?.level || 'balanced';
-  const prompt = `You are an AI assistant that explains concepts in ${style === 'hindi' ? 'Hindi' : 'Hinglish'}. 
+  const style = translationSettings?.style || "hinglish";
+  const level = translationSettings?.level || "balanced";
+  const prompt = `You are an AI assistant that explains concepts in ${
+    style === "hindi" ? "Hindi" : "Hinglish"
+  }. 
     Provide a clear and detailed explanation of the given text. 
-    Make it easy to understand and use ${level === 'moreHindi' ? 'more Hindi words' : level === 'moreEnglish' ? 'more English words' : 'a balanced mix of Hindi and English words'}.
+    Make it easy to understand and use ${
+      level === "moreHindi"
+        ? "more Hindi words"
+        : level === "moreEnglish"
+        ? "more English words"
+        : "a balanced mix of Hindi and English words"
+    }.
     Format your response in a clear, structured way with bullet points or short paragraphs.
     Only respond with the explanation, no additional text.`;
 
   try {
-    const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${groqApiKey}`
-      },
-      body: JSON.stringify({
-        messages: [{
-          role: "system",
-          content: prompt
-        }, {
-          role: "user",
-          content: text
-        }],
-        model: "meta-llama/llama-4-scout-17b-16e-instruct",
-        temperature: 0.7,
-        max_tokens: 1000
-      })
-    });
-    
+    const response = await fetch(
+      "https://api.groq.com/openai/v1/chat/completions",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${groqApiKey}`,
+        },
+        body: JSON.stringify({
+          messages: [
+            {
+              role: "system",
+              content: prompt,
+            },
+            {
+              role: "user",
+              content: text,
+            },
+          ],
+          model: "meta-llama/llama-4-scout-17b-16e-instruct",
+          temperature: 0.7,
+          max_tokens: 1000,
+        }),
+      }
+    );
+
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
-      throw new Error(errorData.error?.message || `API error: ${response.status}`);
+      throw new Error(
+        errorData.error?.message || `API error: ${response.status}`
+      );
     }
-    
+
     const data = await response.json();
     const explanation = data.choices[0].message.content.trim();
-    
+
     if (!explanation) {
       throw new Error("Empty explanation received");
     }
-    
+
     return explanation;
   } catch (error) {
     console.error("Explanation error:", error);
@@ -233,32 +278,35 @@ async function explainText(text) {
 
 // Function to show loading popup
 function showLoadingPopup() {
-  const popup = document.createElement('div');
-  popup.id = 'translationLoadingPopup';
-  popup.style.position = 'fixed';
-  popup.style.zIndex = '9999';
-  popup.style.borderRadius = '8px';
-  popup.style.padding = '20px';
-  popup.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
-  popup.style.maxWidth = '300px';
-  popup.style.fontFamily = 'Arial, sans-serif';
-  popup.style.fontSize = '14px';
-  popup.style.top = '50%';
-  popup.style.left = '50%';
-  popup.style.transform = 'translate(-50%, -50%)';
-  popup.style.textAlign = 'center';
-  
+  const popup = document.createElement("div");
+  popup.id = "translationLoadingPopup";
+  popup.style.position = "fixed";
+  popup.style.zIndex = "9999";
+  popup.style.borderRadius = "8px";
+  popup.style.padding = "20px";
+  popup.style.boxShadow = "0 4px 12px rgba(0,0,0,0.15)";
+  popup.style.maxWidth = "300px";
+  popup.style.fontFamily = "Arial, sans-serif";
+  popup.style.fontSize = "14px";
+  popup.style.top = "50%";
+  popup.style.left = "50%";
+  popup.style.transform = "translate(-50%, -50%)";
+  popup.style.textAlign = "center";
+
   // Dark mode detection and styling
-  if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-    popup.style.backgroundColor = '#2d2d2d';
-    popup.style.color = '#ffffff';
-    popup.style.border = '1px solid #444';
+  if (
+    window.matchMedia &&
+    window.matchMedia("(prefers-color-scheme: dark)").matches
+  ) {
+    popup.style.backgroundColor = "#2d2d2d";
+    popup.style.color = "#ffffff";
+    popup.style.border = "1px solid #444";
   } else {
-    popup.style.backgroundColor = '#ffffff';
-    popup.style.color = '#333333';
-    popup.style.border = '1px solid #ddd';
+    popup.style.backgroundColor = "#ffffff";
+    popup.style.color = "#333333";
+    popup.style.border = "1px solid #ddd";
   }
-  
+
   popup.innerHTML = `
     <div style="margin-bottom: 15px; font-size: 15px;">Processing...</div>
     <div class="loading-spinner" style="
@@ -271,9 +319,9 @@ function showLoadingPopup() {
       animation: spin 1s linear infinite;
     "></div>
   `;
-  
+
   // Add the animation
-  const style = document.createElement('style');
+  const style = document.createElement("style");
   style.textContent = `
     @keyframes spin {
       0% { transform: rotate(0deg); }
@@ -281,38 +329,41 @@ function showLoadingPopup() {
     }
   `;
   document.head.appendChild(style);
-  
+
   document.body.appendChild(popup);
 }
 
 // Function to show translation popup
 function showTranslationPopup(originalText, translatedText) {
   // Remove loading popup if it exists
-  const loadingPopup = document.getElementById('translationLoadingPopup');
+  const loadingPopup = document.getElementById("translationLoadingPopup");
   if (loadingPopup) {
     document.body.removeChild(loadingPopup);
   }
 
-  const popup = document.createElement('div');
-  popup.className = 'hinglish-popup';
-  popup.style.position = 'fixed';
-  popup.style.zIndex = '9999';
-  popup.style.borderRadius = '8px';
-  popup.style.padding = '20px';
-  popup.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
-  popup.style.maxWidth = '400px';
-  popup.style.fontFamily = 'Arial, sans-serif';
-  popup.style.fontSize = '14px';
-  popup.style.top = '50%';
-  popup.style.left = '50%';
-  popup.style.transform = 'translate(-50%, -50%)';
-  
+  const popup = document.createElement("div");
+  popup.className = "hinglish-popup";
+  popup.style.position = "fixed";
+  popup.style.zIndex = "9999";
+  popup.style.borderRadius = "8px";
+  popup.style.padding = "20px";
+  popup.style.boxShadow = "0 4px 12px rgba(0,0,0,0.15)";
+  popup.style.maxWidth = "400px";
+  popup.style.fontFamily = "Arial, sans-serif";
+  popup.style.fontSize = "14px";
+  popup.style.top = "50%";
+  popup.style.left = "50%";
+  popup.style.transform = "translate(-50%, -50%)";
+
   // Dark mode detection and styling
-  if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-    popup.style.backgroundColor = '#2d2d2d';
-    popup.style.color = '#ffffff';
-    popup.style.border = '1px solid #444';
-    
+  if (
+    window.matchMedia &&
+    window.matchMedia("(prefers-color-scheme: dark)").matches
+  ) {
+    popup.style.backgroundColor = "#2d2d2d";
+    popup.style.color = "#ffffff";
+    popup.style.border = "1px solid #444";
+
     popup.innerHTML = `
       <div style="margin-bottom: 15px;">
         <div style="font-weight: bold; margin-bottom: 8px; color: #aaa;">Original Text:</div>
@@ -334,10 +385,10 @@ function showTranslationPopup(originalText, translatedText) {
       </div>
     `;
   } else {
-    popup.style.backgroundColor = '#ffffff';
-    popup.style.color = '#333333';
-    popup.style.border = '1px solid #ddd';
-    
+    popup.style.backgroundColor = "#ffffff";
+    popup.style.color = "#333333";
+    popup.style.border = "1px solid #ddd";
+
     popup.innerHTML = `
       <div style="margin-bottom: 15px;">
         <div style="font-weight: bold; margin-bottom: 8px; color: #666;">Original Text:</div>
@@ -359,28 +410,28 @@ function showTranslationPopup(originalText, translatedText) {
       </div>
     `;
   }
-  
+
   document.body.appendChild(popup);
-  
+
   // Close button functionality
-  const closeButton = popup.querySelector('#closePopup');
-  closeButton.addEventListener('click', () => {
+  const closeButton = popup.querySelector("#closePopup");
+  closeButton.addEventListener("click", () => {
     document.body.removeChild(popup);
   });
-  
+
   // Hover effect for close button
-  closeButton.addEventListener('mouseenter', () => {
-    closeButton.style.background = '#0d5bc1';
+  closeButton.addEventListener("mouseenter", () => {
+    closeButton.style.background = "#0d5bc1";
   });
-  closeButton.addEventListener('mouseleave', () => {
-    closeButton.style.background = '#1a73e8';
+  closeButton.addEventListener("mouseleave", () => {
+    closeButton.style.background = "#1a73e8";
   });
-  
+
   // Close when clicking outside
-  document.addEventListener('click', function outsideClick(e) {
+  document.addEventListener("click", function outsideClick(e) {
     if (!popup.contains(e.target)) {
       document.body.removeChild(popup);
-      document.removeEventListener('click', outsideClick);
+      document.removeEventListener("click", outsideClick);
     }
   });
 }
@@ -388,31 +439,34 @@ function showTranslationPopup(originalText, translatedText) {
 // Function to show explanation popup
 function showExplanationPopup(originalText, explanation) {
   // Remove loading popup if it exists
-  const loadingPopup = document.getElementById('translationLoadingPopup');
+  const loadingPopup = document.getElementById("translationLoadingPopup");
   if (loadingPopup) {
     document.body.removeChild(loadingPopup);
   }
 
-  const popup = document.createElement('div');
-  popup.className = 'hinglish-popup';
-  popup.style.position = 'fixed';
-  popup.style.zIndex = '9999';
-  popup.style.borderRadius = '8px';
-  popup.style.padding = '20px';
-  popup.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
-  popup.style.maxWidth = '500px';
-  popup.style.fontFamily = 'Arial, sans-serif';
-  popup.style.fontSize = '14px';
-  popup.style.top = '50%';
-  popup.style.left = '50%';
-  popup.style.transform = 'translate(-50%, -50%)';
-  
+  const popup = document.createElement("div");
+  popup.className = "hinglish-popup";
+  popup.style.position = "fixed";
+  popup.style.zIndex = "9999";
+  popup.style.borderRadius = "8px";
+  popup.style.padding = "20px";
+  popup.style.boxShadow = "0 4px 12px rgba(0,0,0,0.15)";
+  popup.style.maxWidth = "500px";
+  popup.style.fontFamily = "Arial, sans-serif";
+  popup.style.fontSize = "14px";
+  popup.style.top = "50%";
+  popup.style.left = "50%";
+  popup.style.transform = "translate(-50%, -50%)";
+
   // Dark mode detection and styling
-  if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-    popup.style.backgroundColor = '#2d2d2d';
-    popup.style.color = '#ffffff';
-    popup.style.border = '1px solid #444';
-    
+  if (
+    window.matchMedia &&
+    window.matchMedia("(prefers-color-scheme: dark)").matches
+  ) {
+    popup.style.backgroundColor = "#2d2d2d";
+    popup.style.color = "#ffffff";
+    popup.style.border = "1px solid #444";
+
     popup.innerHTML = `
       <div style="margin-bottom: 15px;">
         <div style="font-weight: bold; margin-bottom: 8px; color: #aaa;">Original Text:</div>
@@ -434,10 +488,10 @@ function showExplanationPopup(originalText, explanation) {
       </div>
     `;
   } else {
-    popup.style.backgroundColor = '#ffffff';
-    popup.style.color = '#333333';
-    popup.style.border = '1px solid #ddd';
-    
+    popup.style.backgroundColor = "#ffffff";
+    popup.style.color = "#333333";
+    popup.style.border = "1px solid #ddd";
+
     popup.innerHTML = `
       <div style="margin-bottom: 15px;">
         <div style="font-weight: bold; margin-bottom: 8px; color: #666;">Original Text:</div>
@@ -459,28 +513,28 @@ function showExplanationPopup(originalText, explanation) {
       </div>
     `;
   }
-  
+
   document.body.appendChild(popup);
-  
+
   // Close button functionality
-  const closeButton = popup.querySelector('#closePopup');
-  closeButton.addEventListener('click', () => {
+  const closeButton = popup.querySelector("#closePopup");
+  closeButton.addEventListener("click", () => {
     document.body.removeChild(popup);
   });
-  
+
   // Hover effect for close button
-  closeButton.addEventListener('mouseenter', () => {
-    closeButton.style.background = '#0d5bc1';
+  closeButton.addEventListener("mouseenter", () => {
+    closeButton.style.background = "#0d5bc1";
   });
-  closeButton.addEventListener('mouseleave', () => {
-    closeButton.style.background = '#1a73e8';
+  closeButton.addEventListener("mouseleave", () => {
+    closeButton.style.background = "#1a73e8";
   });
-  
+
   // Close when clicking outside
-  document.addEventListener('click', function outsideClick(e) {
+  document.addEventListener("click", function outsideClick(e) {
     if (!popup.contains(e.target)) {
       document.body.removeChild(popup);
-      document.removeEventListener('click', outsideClick);
+      document.removeEventListener("click", outsideClick);
     }
   });
 }
@@ -488,31 +542,34 @@ function showExplanationPopup(originalText, explanation) {
 // Function to show error popup
 function showErrorPopup(errorMessage) {
   // Remove loading popup if it exists
-  const loadingPopup = document.getElementById('translationLoadingPopup');
+  const loadingPopup = document.getElementById("translationLoadingPopup");
   if (loadingPopup) {
     document.body.removeChild(loadingPopup);
   }
 
-  const popup = document.createElement('div');
-  popup.className = 'hinglish-popup';
-  popup.style.position = 'fixed';
-  popup.style.zIndex = '9999';
-  popup.style.borderRadius = '8px';
-  popup.style.padding = '20px';
-  popup.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
-  popup.style.maxWidth = '300px';
-  popup.style.fontFamily = 'Arial, sans-serif';
-  popup.style.fontSize = '14px';
-  popup.style.top = '50%';
-  popup.style.left = '50%';
-  popup.style.transform = 'translate(-50%, -50%)';
-  
+  const popup = document.createElement("div");
+  popup.className = "hinglish-popup";
+  popup.style.position = "fixed";
+  popup.style.zIndex = "9999";
+  popup.style.borderRadius = "8px";
+  popup.style.padding = "20px";
+  popup.style.boxShadow = "0 4px 12px rgba(0,0,0,0.15)";
+  popup.style.maxWidth = "300px";
+  popup.style.fontFamily = "Arial, sans-serif";
+  popup.style.fontSize = "14px";
+  popup.style.top = "50%";
+  popup.style.left = "50%";
+  popup.style.transform = "translate(-50%, -50%)";
+
   // Dark mode detection and styling
-  if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-    popup.style.backgroundColor = '#2d2d2d';
-    popup.style.color = '#ffffff';
-    popup.style.border = '1px solid #444';
-    
+  if (
+    window.matchMedia &&
+    window.matchMedia("(prefers-color-scheme: dark)").matches
+  ) {
+    popup.style.backgroundColor = "#2d2d2d";
+    popup.style.color = "#ffffff";
+    popup.style.border = "1px solid #444";
+
     popup.innerHTML = `
       <div style="margin-bottom: 15px;">
         <div style="font-weight: bold; margin-bottom: 8px; color: #ff6b6b;">Error:</div>
@@ -532,10 +589,10 @@ function showErrorPopup(errorMessage) {
       </div>
     `;
   } else {
-    popup.style.backgroundColor = '#ffffff';
-    popup.style.color = '#333333';
-    popup.style.border = '1px solid #ddd';
-    
+    popup.style.backgroundColor = "#ffffff";
+    popup.style.color = "#333333";
+    popup.style.border = "1px solid #ddd";
+
     popup.innerHTML = `
       <div style="margin-bottom: 15px;">
         <div style="font-weight: bold; margin-bottom: 8px; color: #d93025;">Error:</div>
@@ -555,23 +612,23 @@ function showErrorPopup(errorMessage) {
       </div>
     `;
   }
-  
+
   document.body.appendChild(popup);
-  
+
   // Close button functionality
-  const closeButton = popup.querySelector('#closePopup');
-  closeButton.addEventListener('click', () => {
+  const closeButton = popup.querySelector("#closePopup");
+  closeButton.addEventListener("click", () => {
     document.body.removeChild(popup);
   });
-  
+
   // Hover effect for close button
-  closeButton.addEventListener('mouseenter', () => {
-    closeButton.style.background = '#c5221f';
+  closeButton.addEventListener("mouseenter", () => {
+    closeButton.style.background = "#c5221f";
   });
-  closeButton.addEventListener('mouseleave', () => {
-    closeButton.style.background = '#d93025';
+  closeButton.addEventListener("mouseleave", () => {
+    closeButton.style.background = "#d93025";
   });
-  
+
   // Auto close after 5 seconds
   setTimeout(() => {
     if (document.body.contains(popup)) {

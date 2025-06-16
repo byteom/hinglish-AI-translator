@@ -1,20 +1,73 @@
 <!DOCTYPE html>
-<html>
-<head>
-  <title>Setup Groq API Key</title>
-  <link rel="stylesheet" href="popup.css">
-</head>
-<body>
-  <div class="container">
-    <h1>Welcome to Hinglish Translator</h1>
-    <div class="setup">
-      <p>Please enter your Groq API key to enable translations:</p>
-      <input type="password" id="apiKeyInput" placeholder="Enter your Groq API key">
-      <button id="saveApiKey">Save Key</button>
-      <p class="note">Your key will be stored locally in Chrome and only used for translation requests.</p>
-      <p class="note">Don't have a key? <a href="https://groq.com/" target="_blank">Get one from Groq</a></p>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Setup Groq API Key – Hinglish Translator</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="welcome.css" />
+  </head>
+  <body>
+    <div class="container">
+      <h1 class="title">Welcome to <span>Hinglish Translator</span></h1>
+
+      <div class="setup">
+        <p class="setup-intro">
+          Please enter your <strong>Groq API key</strong> to enable
+          translations:
+        </p>
+
+        <input
+          type="password"
+          id="apiKeyInput"
+          placeholder="Enter your Groq API key"
+        />
+
+        <button id="saveApiKey">Save Key</button>
+
+        <p class="note">
+          🔐 Your key will be stored <strong>locally</strong> in Chrome and only
+          used for translation requests.
+        </p>
+
+        <p class="note">
+          Don’t have a key?
+          <a href="https://groq.com/" target="_blank">Get one from Groq</a>
+        </p>
+      </div>
     </div>
-  </div>
-  <script src="welcome.js"></script>
-</body>
+
+    <script src="welcome.js"></script>
+  </body>
 </html>
+
+<!-- --------- -->
+<!-- <!DOCTYPE html>
+<html>
+  <head>
+    <title>Setup Groq API Key</title>
+    <link rel="stylesheet" href="popup.css" />
+  </head>
+  <body>
+    <div class="container">
+      <h1>Welcome to Hinglish Translator</h1>
+      <div class="setup">
+        <p>Please enter your Groq API key to enable translations:</p>
+        <input
+          type="password"
+          id="apiKeyInput"
+          placeholder="Enter your Groq API key"
+        />
+        <button id="saveApiKey">Save Key</button>
+        <p class="note">
+          Your key will be stored locally in Chrome and only used for
+          translation requests.
+        </p>
+        <p class="note">
+          Don't have a key?
+          <a href="https://groq.com/" target="_blank">Get one from Groq</a>
+        </p>
+      </div>
+    </div>
+    <script src="welcome.js"></script>
+  </body>
+</html> -->

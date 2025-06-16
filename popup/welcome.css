@@ -1,0 +1,148 @@
+/* Reset & Base styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body {
+  font-family: "Segoe UI", Roboto, sans-serif;
+  background-color: #f9f9f9;
+  color: #333;
+  height: 100%;
+  line-height: 1.6;
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  html,
+  body {
+    background-color: #121212;
+    color: #eee;
+  }
+
+  input,
+  .primary-button {
+    background-color: #1e1e1e;
+    color: #fff;
+    border: 1px solid #333;
+  }
+
+  .setup-box {
+    background-color: #1a1a1a;
+    box-shadow: 0 4px 16px rgba(255, 255, 255, 0.05);
+  }
+
+  a {
+    color: #4ea1f2;
+  }
+
+  a:hover {
+    color: #7dbbff;
+  }
+}
+
+
+/* Container */
+.container {
+  width: 100%;
+  max-width: 100%;
+  padding: 16px;
+  min-width: 360px; /* Ensure it looks good in extension popup */
+}
+
+
+
+.setup{
+     background: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+}
+
+/* Header */
+h1 {
+  font-size: 24px;
+  margin-bottom: 6px;
+  font-weight: 600;
+  text-align: center;
+  
+}
+
+.subtitle {
+  font-size: 15px;
+  text-align: center;
+  color: #666;
+  margin-bottom: 30px;
+}
+
+.setup-intro{
+    color: #121212;
+}
+
+
+.input-label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 500;
+  font-size: 14px;
+  color: #555;
+}
+
+input[type="password"] {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 15px;
+  margin-bottom: 20px;
+  transition: border-color 0.2s;
+}
+
+input[type="password"]:focus {
+  outline: none;
+  border-color: #1a73e8;
+}
+
+/* Button */
+.primary-button {
+  display: block;
+  width: 100%;
+  padding: 10px 16px;
+  background-color: #1a73e8;
+  color: white;
+  font-size: 15px;
+  font-weight: 500;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.3s;
+  margin-bottom: 20px;
+}
+
+.primary-button:hover {
+  background-color: #1664cc;
+}
+
+/* Notes & Links */
+.note {
+  font-size: 13px;
+  color: #777;
+  margin-bottom: 8px;
+  text-align: center;
+}
+
+.note a {
+  color: #1a73e8;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.note a:hover {
+  text-decoration: underline;
+}
+
+.small {
+  font-size: 12px;
+}
