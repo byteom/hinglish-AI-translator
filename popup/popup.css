@@ -12,6 +12,8 @@
   --error-bg: #fce8e6;
   --error-color: #d93025;
   --label-color: #5f6368;
+  --button-transition: all 0.2s ease;
+  --hover-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -29,6 +31,7 @@
     --error-bg: #3c1a1a;
     --error-color: #f28b82;
     --label-color: #9aa0a6;
+    --hover-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
   }
 }
 
@@ -70,16 +73,29 @@ h2 {
   display: flex;
   gap: 8px;
   margin-bottom: 10px;
+  max-width: 350px; /* Limit the width of the input group */
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .input-group input {
   flex-grow: 1;
-  padding: 8px;
+  padding: 8px 10px; /* Smaller vertical padding */
   border: 1px solid var(--input-border);
   border-radius: 4px;
   font-family: monospace;
   background: var(--bg-color);
   color: var(--text-color);
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  font-size: 13px;
+  letter-spacing: 0.5px;
+  height: 20px; /* Set a fixed height */
+}
+
+.input-group input:focus {
+  outline: none;
+  border-color: var(--button-bg);
+  box-shadow: 0 0 0 2px rgba(26, 115, 232, 0.2);
 }
 
 .button-group {
@@ -89,22 +105,33 @@ h2 {
 }
 
 button {
-  padding: 8px 16px;
+  padding: 6px 14px;
   background: var(--button-bg);
   color: white;
   border: none;
   border-radius: 4px;
   cursor: pointer;
-  font-size: 14px;
-  transition: background-color 0.2s;
+  font-size: 13px;
+  transition: var(--button-transition);
+  height: 32px; /* Fixed height for consistency */
 }
 
 button:hover {
   background: var(--button-hover);
+  box-shadow: var(--hover-shadow);
+  transform: translateY(-1px);
 }
 
 button:active {
   background: var(--button-active);
+  transform: translateY(0);
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
 }
 
 #saveApiKey {
@@ -131,6 +158,14 @@ button:active {
 
 .setting-group {
   margin-bottom: 15px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  border-radius: 4px;
+  padding: 8px;
+}
+
+.setting-group:hover {
+  background-color: rgba(26, 115, 232, 0.05);
+  transform: translateY(-1px);
 }
 
 .setting-group label {
@@ -148,6 +183,18 @@ select {
   background: var(--bg-color);
   color: var(--text-color);
   font-size: 14px;
+  cursor: pointer;
+  transition: border-color 0.2s ease;
+}
+
+select:hover {
+  border-color: var(--button-hover);
+}
+
+select:focus {
+  border-color: var(--button-bg);
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(26, 115, 232, 0.3);
 }
 
 .status {
@@ -222,4 +269,264 @@ li:last-child {
     transform: translate(-50%, 0);
     opacity: 1;
   }
+}
+
+/* Add loading spinner animation */
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.spinner {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-radius: 50%;
+  border-top-color: white;
+  animation: spin 0.8s linear infinite;
+  margin-right: 8px;
+  vertical-align: text-bottom;
+}
+
+/* Add feedback message styles */
+.success-message {
+  color: var(--success-color);
+  background: var(--success-bg);
+  padding: 8px;
+  border-radius: 4px;
+  margin: 8px 0;
+  font-size: 14px;
+  text-align: center;
+}
+
+.error-message {
+  color: var(--error-color);
+  background: var(--error-bg);
+  padding: 8px;
+  border-radius: 4px;
+  margin: 8px 0;
+  font-size: 14px;
+  text-align: center;
+}
+
+/* Add smooth transitions for containers */
+.api-key-container {
+  transition: opacity 0.3s ease, height 0.3s ease;
+  overflow: hidden;
+  background-color: var(--section-bg);
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 12px;
+  border: 1px solid var(--border-color);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  max-width: 360px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.api-key-container.hidden {
+  opacity: 0;
+  height: 0;
+  padding: 0;
+  margin: 0;
+}
+
+/* Improve feedback for action states */
+.success-message {
+  color: var(--success-color);
+  background: var(--success-bg);
+  padding: 8px;
+  border-radius: 4px;
+  margin: 8px 0;
+  font-size: 14px;
+}
+
+.error-message {
+  color: var(--error-color);
+  background: var(--error-bg);
+  padding: 8px;
+  border-radius: 4px;
+  margin: 8px 0;
+  font-size: 14px;
+}
+
+/* Additional styles for API usage section */
+.api-usage-section {
+  margin-top: 20px;
+  padding: 15px;
+  background-color: var(--section-bg);
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+}
+
+.usage-stats {
+  margin: 10px 0;
+}
+
+.stat {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  padding: 5px 0;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.usage-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 10px;
+}
+
+#lastApiStatus {
+  font-weight: bold;
+}
+
+.success-status {
+  color: var(--success-color);
+}
+
+.error-status {
+  color: var(--error-color);
+}
+
+.session-option, .checkbox-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 10px 0;
+}
+
+.checkbox-container input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+}
+
+/* Progress bar styles */
+.progress-container {
+  width: 100%;
+  background-color: var(--input-border);
+  border-radius: 4px;
+  height: 8px;
+  margin: 10px 0;
+  overflow: hidden;
+}
+
+.progress-bar {
+  height: 100%;
+  background-color: var(--button-bg);
+  width: 0%;
+  transition: width 0.3s;
+}
+
+/* Status indicators */
+.status-indicator {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  margin-left: 5px;
+}
+
+.success-indicator {
+  background-color: var(--success-color);
+  color: #ffffff;
+}
+
+.error-indicator {
+  background-color: var(--error-color);
+  color: #ffffff;
+}
+
+/* Styles for welcome page session checkbox */
+.setup .session-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 15px 0;
+}
+
+.setup input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+}
+
+.setup label {
+  font-size: 14px;
+  color: var(--text-color);
+}
+
+/* Style for the icon button */
+.icon-button {
+  padding: 3px 6px;
+  background-color: var(--section-bg);
+  border: 1px solid var(--input-border);
+  border-radius: 4px;
+  font-size: 11px;
+  cursor: pointer;
+  margin-left: 4px;
+  color: var(--button-bg);
+  transition: var(--button-transition);
+  height: 32px; /* Match the height of the input */
+  min-width: 45px;
+}
+
+.icon-button:hover {
+  background-color: var(--button-bg);
+  color: white;
+}
+
+/* Improve API key status styling */
+.api-key-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.api-key-status {
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-size: 14px;
+  text-align: center;
+  font-weight: bold;
+  margin-bottom: 8px;
+  transition: background-color 0.3s ease;
+  color: white;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.api-key-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}
+
+/* Style for the API key help link */
+.key-help {
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+}
+
+.save-key-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 8px;
+}
+
+.api-key-options {
+  margin: 6px 0;
+  font-size: 12px;
+}
+
+.checkbox-container.compact {
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 2px;
 }

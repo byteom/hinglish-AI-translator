@@ -19,10 +19,8 @@
     ],
     "host_permissions": [
       "https://api.groq.com/*"
-    ],
-    "background": {
-      "service_worker": "background.js",
-      "type": "module"
+    ],    "background": {
+      "service_worker": "background.js"
     },
     "action": {
         "default_popup": "popup/welcome.html",
@@ -31,13 +29,18 @@
         "32": "icons/icon32.png",
         "48": "icons/icon48.png"
       }
-    },
-    "content_scripts": [
+    },    "content_scripts": [
       {
         "matches": ["<all_urls>"],
         "js": ["content.js"],
         "css": ["styles/content.css"],
         "run_at": "document_idle"
+      }
+    ],
+    "web_accessible_resources": [
+      {
+        "resources": ["utils/securityHelper.js", "utils/apiRequestManager.js"],
+        "matches": ["<all_urls>"]
       }
     ]
   }
