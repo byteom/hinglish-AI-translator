@@ -345,71 +345,47 @@ function showTranslationPopup(originalText, translatedText) {
   popup.className = "hinglish-popup";
   popup.style.position = "fixed";
   popup.style.zIndex = "9999";
-  popup.style.borderRadius = "8px";
-  popup.style.padding = "20px";
-  popup.style.boxShadow = "0 4px 12px rgba(0,0,0,0.15)";
-  popup.style.maxWidth = "400px";
-  popup.style.fontFamily = "Arial, sans-serif";
-  popup.style.fontSize = "14px";
+  popup.style.borderRadius = "12px";
+  popup.style.padding = "24px";
+  popup.style.boxShadow = "0 8px 30px rgba(0, 0, 0, 0.15)";
+  popup.style.maxWidth = "420px";
+  popup.style.width = "90%";
+  popup.style.fontFamily = "Inter, Arial, sans-serif";
+  popup.style.fontSize = "15px";
   popup.style.top = "50%";
   popup.style.left = "50%";
   popup.style.transform = "translate(-50%, -50%)";
+  popup.style.transition = "all 0.3s ease";
 
-  // Dark mode detection and styling
-  if (
-    window.matchMedia &&
-    window.matchMedia("(prefers-color-scheme: dark)").matches
-  ) {
-    popup.style.backgroundColor = "#2d2d2d";
-    popup.style.color = "#ffffff";
-    popup.style.border = "1px solid #444";
+  // Unified light/dark mode UI
+  popup.style.backgroundColor = "#ffffff";
+  popup.style.color = "#000000";
+  popup.style.border = "1px solid #e0e0e0";
 
-    popup.innerHTML = `
-      <div style="margin-bottom: 15px;">
-        <div style="font-weight: bold; margin-bottom: 8px; color: #aaa;">Original Text:</div>
-        <div style="background: #3a3a3a; padding: 12px; border-radius: 6px; margin-bottom: 15px; line-height: 1.5;">${originalText}</div>
-        <div style="font-weight: bold; margin-bottom: 8px; color: #aaa;">Translation:</div>
-        <div style="background: #1a3d6d; padding: 12px; border-radius: 6px; margin-bottom: 15px; line-height: 1.5;">${translatedText}</div>
-      </div>
-      <div style="text-align: right;">
-        <button id="closePopup" style="
-          cursor: pointer;
-          padding: 8px 16px;
-          background: #1a73e8;
-          color: white;
-          border: none;
-          border-radius: 4px;
-          font-size: 14px;
-          transition: background 0.2s;
-        ">Close</button>
-      </div>
-    `;
-  } else {
-    popup.style.backgroundColor = "#ffffff";
-    popup.style.color = "#333333";
-    popup.style.border = "1px solid #ddd";
-
-    popup.innerHTML = `
-      <div style="margin-bottom: 15px;">
-        <div style="font-weight: bold; margin-bottom: 8px; color: #666;">Original Text:</div>
-        <div style="background: #f5f5f5; padding: 12px; border-radius: 6px; margin-bottom: 15px; line-height: 1.5;">${originalText}</div>
-        <div style="font-weight: bold; margin-bottom: 8px; color: #666;">Translation:</div>
-        <div style="background: #e8f0fe; padding: 12px; border-radius: 6px; margin-bottom: 15px; line-height: 1.5;">${translatedText}</div>
-      </div>
-      <div style="text-align: right;">
-        <button id="closePopup" style="
-          cursor: pointer;
-          padding: 8px 16px;
-          background: #1a73e8;
-          color: white;
-          border: none;
-          border-radius: 4px;
-          font-size: 14px;
-          transition: background 0.2s;
-        ">Close</button>
-      </div>
-    `;
-  }
+  // Apply modern minimal HTML
+  popup.innerHTML = `
+  <div style="margin-bottom: 20px;">
+    <div style="font-weight: 600; margin-bottom: 6px; color: #444;">Original</div>
+    <div style="background: #f9f9f9; padding: 12px 16px; border-radius: 8px; line-height: 1.6;">${originalText}</div>
+  </div>
+  <div style="margin-bottom: 20px;">
+    <div style="font-weight: 600; margin-bottom: 6px; color: #444;">Translation</div>
+    <div style="background: #e8f0fe; padding: 12px 16px; border-radius: 8px; line-height: 1.6;">${translatedText}</div>
+  </div>
+  <div style="text-align: right;">
+    <button id="closePopup" style="
+      padding: 8px 20px;
+      background: #1a73e8;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    ">Close</button>
+  </div>
+`;
 
   document.body.appendChild(popup);
 
@@ -448,71 +424,56 @@ function showExplanationPopup(originalText, explanation) {
   popup.className = "hinglish-popup";
   popup.style.position = "fixed";
   popup.style.zIndex = "9999";
-  popup.style.borderRadius = "8px";
+  popup.style.borderRadius = "10px";
   popup.style.padding = "20px";
-  popup.style.boxShadow = "0 4px 12px rgba(0,0,0,0.15)";
+  popup.style.boxShadow = "0 4px 20px rgba(0,0,0,0.15)";
   popup.style.maxWidth = "500px";
+  popup.style.width = "90%";
   popup.style.fontFamily = "Arial, sans-serif";
   popup.style.fontSize = "14px";
   popup.style.top = "50%";
   popup.style.left = "50%";
   popup.style.transform = "translate(-50%, -50%)";
 
-  // Dark mode detection and styling
-  if (
+  // 🌙 Light/Dark Theme Detection
+  const isDarkMode =
     window.matchMedia &&
-    window.matchMedia("(prefers-color-scheme: dark)").matches
-  ) {
-    popup.style.backgroundColor = "#2d2d2d";
-    popup.style.color = "#ffffff";
-    popup.style.border = "1px solid #444";
+    window.matchMedia("(prefers-color-scheme: dark)").matches;
 
-    popup.innerHTML = `
-      <div style="margin-bottom: 15px;">
-        <div style="font-weight: bold; margin-bottom: 8px; color: #aaa;">Original Text:</div>
-        <div style="background: #3a3a3a; padding: 12px; border-radius: 6px; margin-bottom: 15px; line-height: 1.5;">${originalText}</div>
-        <div style="font-weight: bold; margin-bottom: 8px; color: #aaa;">AI Explanation:</div>
-        <div style="background: #1a3d6d; padding: 12px; border-radius: 6px; margin-bottom: 15px; line-height: 1.5; white-space: pre-wrap; max-height: 300px; overflow-y: auto;">${explanation}</div>
-      </div>
-      <div style="text-align: right;">
-        <button id="closePopup" style="
-          cursor: pointer;
-          padding: 8px 16px;
-          background: #1a73e8;
-          color: white;
-          border: none;
-          border-radius: 4px;
-          font-size: 14px;
-          transition: background 0.2s;
-        ">Close</button>
-      </div>
-    `;
-  } else {
-    popup.style.backgroundColor = "#ffffff";
-    popup.style.color = "#333333";
-    popup.style.border = "1px solid #ddd";
+  popup.style.backgroundColor = isDarkMode ? "#1e1e1e" : "#ffffff";
+  popup.style.color = isDarkMode ? "#f1f1f1" : "#000000";
+  popup.style.border = isDarkMode ? "1px solid #333333" : "1px solid #e0e0e0";
 
-    popup.innerHTML = `
-      <div style="margin-bottom: 15px;">
-        <div style="font-weight: bold; margin-bottom: 8px; color: #666;">Original Text:</div>
-        <div style="background: #f5f5f5; padding: 12px; border-radius: 6px; margin-bottom: 15px; line-height: 1.5;">${originalText}</div>
-        <div style="font-weight: bold; margin-bottom: 8px; color: #666;">AI Explanation:</div>
-        <div style="background: #e8f0fe; padding: 12px; border-radius: 6px; margin-bottom: 15px; line-height: 1.5; white-space: pre-wrap; max-height: 300px; overflow-y: auto;">${explanation}</div>
-      </div>
-      <div style="text-align: right;">
-        <button id="closePopup" style="
-          cursor: pointer;
-          padding: 8px 16px;
-          background: #1a73e8;
-          color: white;
-          border: none;
-          border-radius: 4px;
-          font-size: 14px;
-          transition: background 0.2s;
-        ">Close</button>
-      </div>
-    `;
-  }
+  popup.innerHTML = `
+  <div style="margin-bottom: 15px;">
+    <div style="font-weight: bold; margin-bottom: 8px; color: ${
+      isDarkMode ? "#ccc" : "#555"
+    }">Original Text:</div>
+    <div style="background: ${
+      isDarkMode ? "#2a2a2a" : "#f5f5f5"
+    }; padding: 12px; border-radius: 6px; margin-bottom: 15px; line-height: 1.5;">${originalText}</div>
+
+    <div style="font-weight: bold; margin-bottom: 8px; color: ${
+      isDarkMode ? "#ccc" : "#555"
+    }">AI Explanation:</div>
+    <div style="background: ${
+      isDarkMode ? "#0d2c53" : "#e8f0fe"
+    }; padding: 12px; border-radius: 6px; line-height: 1.5; white-space: pre-wrap; max-height: 300px; overflow-y: auto;">${explanation}</div>
+  </div>
+
+  <div style="text-align: right;">
+    <button id="closePopup" style="
+      cursor: pointer;
+      padding: 8px 16px;
+      background: #1a73e8;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      font-size: 14px;
+      transition: background 0.2s;
+    ">Close</button>
+  </div>
+`;
 
   document.body.appendChild(popup);
 
