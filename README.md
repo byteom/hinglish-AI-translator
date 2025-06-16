@@ -28,7 +28,7 @@ A powerful and intuitive Chrome extension that brings seamless translation and A
 - Right-click on any selected text
 - Choose between translation or explanation
 - View instant results in a sleek popup window
-- No page to reload the page
+- No need to reload the page
 
 ## 🛠️ Technical Implementation
 
