@@ -1,103 +1,114 @@
 /* Style for translation popup */
 :root {
-  --text-color: #202124;
-  --bg-color: #ffffff;
-  --border-color: #e0e0e0;
-  --shadow-color: rgba(0, 0, 0, 0.15);
-  --hover-bg: #f1f3f4;
-  --copy-color: #5f6368;
-  --close-color: #d93025;
+    --text-color: #202124;
+    --bg-color: #ffffff;
+    --border-color: #e0e0e0;
+    --shadow-color: rgba(0, 0, 0, 0.15);
+    --hover-bg: #f1f3f4;
+    --copy-color: #5f6368;
+    --close-color: #d93025;
 }
 
 @media (prefers-color-scheme: dark) {
-  :root {
-    --text-color: #e8eaed;
-    --bg-color: #202124;
-    --border-color: #3c4043;
-    --shadow-color: rgba(0, 0, 0, 0.3);
-    --hover-bg: #3c4043;
-    --copy-color: #9aa0a6;
-    --close-color: #f28b82;
-  }
+    :root {
+        --text-color: #e8eaed;
+        --bg-color: #202124;
+        --border-color: #3c4043;
+        --shadow-color: rgba(0, 0, 0, 0.3);
+        --hover-bg: #3c4043;
+        --copy-color: #9aa0a6;
+        --close-color: #f28b82;
+    }
 }
 
 .hinglish-popup {
-  position: fixed;
-  z-index: 999999;
-  top: 0;
-  left: 0;
-  background: var(--bg-color);
-  border: 1px solid var(--border-color);
-  border-radius: 8px;
-  box-shadow: 0 4px 12px var(--shadow-color);
-  max-width: 400px;
-  font-family: 'Segoe UI', Arial, sans-serif;
-  animation: fadeIn 0.2s ease-out;
-  color: var(--text-color);
+    /* added overflow to auto and max-height */
+    overflow: auto;
+    max-height: 90vh;
+    position: fixed;
+    z-index: 999999;
+    top: 0;
+    left: 0;
+    background: var(--bg-color);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    box-shadow: 0 4px 12px var(--shadow-color);
+    max-width: 400px;
+    font-family: "Segoe UI", Arial, sans-serif;
+    animation: fadeIn 0.2s ease-out;
+    color: var(--text-color);
 }
 
 .hinglish-popup-content {
-  padding: 12px;
+    padding: 12px;
 }
 
-.hinglish-original, .hinglish-translation {
-  margin-bottom: 8px;
-  line-height: 1.4;
+.hinglish-original,
+.hinglish-translation {
+    margin-bottom: 8px;
+    line-height: 1.4;
 }
 
-.hinglish-original strong, .hinglish-translation strong {
-  color: #1a73e8;
+.hinglish-original strong,
+.hinglish-translation strong {
+    color: #1a73e8;
 }
 
 .hinglish-popup-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 8px;
-  margin-top: 8px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 8px;
 }
 
 .hinglish-popup-actions button {
-  background: none;
-  border: none;
-  cursor: pointer;
-  font-size: 14px;
-  padding: 4px 8px;
-  border-radius: 4px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    padding: 4px 8px;
+    border-radius: 4px;
 }
 
 .hinglish-popup-actions button:hover {
-  background: var(--hover-bg);
+    background: var(--hover-bg);
 }
 
 .hinglish-copy {
-  color: var(--copy-color);
+    color: var(--copy-color);
 }
 
 .hinglish-close {
-  color: var(--close-color);
+    color: var(--close-color);
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 /* Style for translated elements */
 .hinglish-translated {
-  position: relative;
+    position: relative;
 }
 
 .hinglish-translated::after {
-  content: '🔄';
-  position: absolute;
-  right: 0;
-  top: 0;
-  font-size: 12px;
-  cursor: pointer;
-  opacity: 0;
-  transition: opacity 0.2s;
+    content: "🔄";
+    position: absolute;
+    right: 0;
+    top: 0;
+    font-size: 12px;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.2s;
 }
 
 .hinglish-translated:hover::after {
-  opacity: 1;
+    opacity: 1;
 }
