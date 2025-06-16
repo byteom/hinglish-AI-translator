@@ -1,4 +1,3 @@
-
 # 🚀 Hinglish Translator - Chrome Extension
 
 A powerful and intuitive Chrome extension that brings seamless translation and AI-powered explanations to your browsing experience. Transform any English text into Hinglish (Hindi written in English letters) or Hindi with just a right-click!
@@ -7,28 +6,40 @@ A powerful and intuitive Chrome extension that brings seamless translation and A
 
 ### 🎯 Smart Translation
 - **Multiple Translation Styles**
-  - Hinglish (Default) - Perfect blend of Hindi and English
-  - Hindi (Devanagari) - Pure Hindi script
-  - Roman - Hindi in English letters
-  - Formal Hinglish - Professional tone
-  - Casual Hinglish - Conversational style
+  - Hinglish (Default) – Perfect blend of Hindi and English
+  - Hindi (Devanagari) – Pure Hindi script
+  - Roman – Hindi in English letters
+  - Formal Hinglish – Professional tone
+  - Casual Hinglish – Conversational style
 
 ### 🎨 Customization Options
 - **Language Level Control**
-  - Balanced - Equal mix of Hindi and English
-  - More Hindi - Hindi-dominant translation
-  - More English - English-dominant translation
+  - Balanced – Equal mix of Hindi and English
+  - More Hindi – Hindi-dominant translation
+  - More English – English-dominant translation
 
 ### 🤖 AI-Powered Features
-- **Smart Translation** - Context-aware translations that maintain the original meaning
-- **AI Explanations** - Get detailed explanations of selected text in your preferred language style
-- **Natural Language Processing** - Powered by advanced Groq AI models
+- **Smart Translation** – Context-aware translations that maintain the original meaning
+- **AI Explanations** – Get detailed explanations of selected text in your preferred language style
+- **Natural Language Processing** – Powered by advanced Groq AI models
 
-### 🎯 Easy to Use
-- Right-click on any selected text
-- Choose between translation or explanation
-- Instant results in a beautiful popup
-- No page reload required
+### 🧠 How It Works
+
+#### 🔁 Basic Translation
+1. Right-click selected text  
+2. Choose "Translate"  
+3. See popup with Hinglish result
+
+#### 🤓 AI Explanation
+1. Right-click selected text  
+2. Choose "Explain"  
+3. AI provides context-aware explanation
+
+#### ⚙️ Customizing Settings
+1. Go to Extension Options  
+2. Select Translation Style  
+3. Choose Language Balance  
+4. Save Settings
 
 ## 🛠️ Technical Implementation
 
@@ -39,108 +50,51 @@ A powerful and intuitive Chrome extension that brings seamless translation and A
 - **Security**: Secure API key management
 
 ### Architecture
-- **Modular Design**: Clean separation of concerns
-- **Event-Driven**: Efficient message handling
-- **Responsive UI**: Beautiful and intuitive interface
-- **Error Handling**: Robust error management
+- **Modular Design** – Clean separation of concerns  
+- **Event-Driven** – Efficient message handling  
+- **Responsive UI** – Beautiful and intuitive interface  
+- **Error Handling** – Robust error management  
+
+### 🧱 Project Structure
+- `popup/` – Handles UI and translation display  
+- `background/` – Adds context menu, listens for events  
+- `content/` – Injects scripts to access webpage text  
+- `manifest.json` – Extension metadata and permissions
 
 ## 🚀 Getting Started
 
 ### Prerequisites
-- Google Chrome browser
+- Google Chrome browser  
 - Groq API key
 
 ### Installation
-1. Clone the repository
-2. Open Chrome and navigate to `chrome://extensions/`
-3. Enable "Developer mode"
-4. Click "Load unpacked" and select the extension directory
 
-### Configuration
-1. Click the extension icon
-2. Enter your Groq API key
-3. Customize translation settings
-4. Start translating!
+1. Clone or download this repository  
+2. Open `chrome://extensions/` in Chrome  
+3. Enable **Developer mode** (top-right corner)  
+4. Click **Load unpacked**  
+5. Select the project folder  
 
-## 💡 Usage Guide
+## 🧪 Testing
 
-### Basic Translation
-1. Select text on any webpage
-2. Right-click and choose "Translate to Hinglish"
-3. View the translation in the popup
+To test functionality:
+- Try selecting any English sentence on a web page  
+- Right-click → "Translate" or "Explain"  
+- Check translation or explanation popup  
 
-### AI Explanation
-1. Select text on any webpage
-2. Right-click and choose "Explain in Hinglish"
-3. Get a detailed explanation in your preferred style
+## 📦 Future Enhancements
 
-### Customizing Settings
-1. Click the extension icon
-2. Choose your preferred translation style
-3. Select your language level
-4. Save settings
-
-## 🔒 Security Features
-- Secure API key storage
-- No data collection
-- Local processing
-- Encrypted communication
-
-## 🛠️ Development
-
-### Project Structure
-```
-hinglish-translator/
-├── manifest.json
-├── background.js
-├── content.js
-├── popup/
-│   ├── popup.html
-│   ├── popup.js
-│   ├── popup.css
-│   └── welcome.html
-└── README.md
-```
-
-### Key Components
-- **background.js**: Handles API calls and context menu
-- **content.js**: Manages page content and translations
-- **popup/**: Contains UI components and settings
-
-## 🎯 Performance Optimization
-- Efficient API calls
-- Minimal memory footprint
-- Fast response times
-- Optimized UI rendering
-
-## 🔄 Future Enhancements
-- [ ] Support for more languages
-- [ ] Batch translation
-- [ ] Custom translation rules
-- [ ] Translation history
-- [ ] Offline mode
+- [ ] Add voice support  
+- [ ] Improve Hindi grammar  
+- [ ] Support regional dialects  
 
 ## 🤝 Contributing
-We welcome contributions! Please read our [Contribution Guidelines](CONTRIBUTING.md) before making any changes.
 
-## 📝 License
-This project is licensed under the terms of our [License Agreement](LICENSE.md).
+Contributions are welcome! Please fork the repository and submit a pull request. Make sure to follow the code style and include tests where applicable.
 
-## 🙏 Acknowledgments
-- Groq AI for providing the powerful API
-- Chrome Extension community for inspiration
-- All contributors and users
+## 📧 Support
 
-## 📞 Support
-For support, please open an issue in the repository or contact the maintainers. 
+For support, please [open an issue](https://github.com/byteom/hinglish-AI-translator/issues) or contact the maintainers.
 
 ---
 
-Made with ❤️ by [Om Singh] - A passionate developer dedicated to making language translation accessible to everyone!
-```
-
-Key changes made:
-1. Updated the "Contributing" section link to point to `CONTRIBUTING.md`
-2. Updated the "License" section link to point to `LICENSE.md`
-3. Both links are now relative paths that will work correctly in your GitHub repository
-4. Maintained all existing content and formatting while just updating these two links
