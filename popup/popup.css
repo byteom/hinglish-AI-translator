@@ -223,3 +223,110 @@ li:last-child {
     opacity: 1;
   }
 }
+
+/* Additional styles for API usage section */
+.api-usage-section {
+  margin-top: 20px;
+  padding: 15px;
+  background-color: var(--section-bg);
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+}
+
+.usage-stats {
+  margin: 10px 0;
+}
+
+.stat {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  padding: 5px 0;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.usage-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 10px;
+}
+
+#lastApiStatus {
+  font-weight: bold;
+}
+
+.success-status {
+  color: var(--success-color);
+}
+
+.error-status {
+  color: var(--error-color);
+}
+
+.session-option, .checkbox-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 10px 0;
+}
+
+.checkbox-container input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+}
+
+/* Progress bar styles */
+.progress-container {
+  width: 100%;
+  background-color: var(--input-border);
+  border-radius: 4px;
+  height: 8px;
+  margin: 10px 0;
+  overflow: hidden;
+}
+
+.progress-bar {
+  height: 100%;
+  background-color: var(--button-bg);
+  width: 0%;
+  transition: width 0.3s;
+}
+
+/* Status indicators */
+.status-indicator {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  margin-left: 5px;
+}
+
+.success-indicator {
+  background-color: var(--success-color);
+  color: #ffffff;
+}
+
+.error-indicator {
+  background-color: var(--error-color);
+  color: #ffffff;
+}
+
+/* Styles for welcome page session checkbox */
+.setup .session-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 15px 0;
+}
+
+.setup input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+}
+
+.setup label {
+  font-size: 14px;
+  color: var(--text-color);
+}

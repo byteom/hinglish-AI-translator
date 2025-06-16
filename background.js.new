@@ -1,289 +1,6 @@
-// --- BEGIN SecurityHelper ---
-// Security utility for handling API key storage and encryption
-class SecurityHelper {
-  // Simple obfuscation using base64 encoding
-  static encryptApiKey(apiKey) {
-    try {
-      return btoa(apiKey);
-    } catch (error) {
-      console.error('Error encrypting API key:', error);
-      return null;
-    }
-  }
-
-  // Decrypt API key from storage
-  static decryptApiKey(encryptedKey) {
-    try {
-      return atob(encryptedKey);
-    } catch (error) {
-      console.error('Error decrypting API key:', error);
-      return null;
-    }
-  }
-
-  // Store API key securely
-  static async storeApiKey(apiKey, sessionOnly = false) {
-    try {
-      const encryptedKey = this.encryptApiKey(apiKey);
-      if (!encryptedKey) {
-        throw new Error('Failed to encrypt API key');
-      }
-
-      if (sessionOnly) {
-        // Use sessionStorage for session-only storage (not available in background script)
-        // Mark it for session-only in storage
-        await chrome.storage.local.set({ 
-          'groqApiKey': encryptedKey,
-          'apiKeyInSession': true 
-        });
-      } else {
-        // Store in Chrome's local storage for persistence
-        await chrome.storage.local.set({ 
-          'groqApiKey': encryptedKey,
-          'apiKeyInSession': false 
-        });
-      }
-      return true;
-    } catch (error) {
-      console.error('Error storing API key:', error);
-      return false;
-    }
-  }
-
-  // Retrieve the stored API key
-  static async getApiKey() {
-    try {
-      // First check if we've marked the API key as session-only
-      const { apiKeyInSession, groqApiKey } = await chrome.storage.local.get(['apiKeyInSession', 'groqApiKey']);
-      
-      if (groqApiKey) {
-        return this.decryptApiKey(groqApiKey);
-      }
-      
-      return null;
-    } catch (error) {
-      console.error('Error retrieving API key:', error);
-      return null;
-    }
-  }
-
-  // Check if the API key exists
-  static async hasApiKey() {
-    const { groqApiKey } = await chrome.storage.local.get(['groqApiKey']);
-    return !!groqApiKey;
-  }
-
-  // Clear the stored API key
-  static async clearApiKey() {
-    try {
-      await chrome.storage.local.remove(['groqApiKey', 'apiKeyInSession']);
-      return true;
-    } catch (error) {
-      console.error('Error clearing API key:', error);
-      return false;
-    }
-  }
-}
-// --- END SecurityHelper ---
-
-// --- BEGIN ApiRequestManager ---
-// Utility for managing API requests with throttling and rate limiting
-class ApiRequestManager {
-  constructor(options = {}) {
-    // Default settings
-    this.options = {
-      throttleDelay: 500, // 500ms between requests
-      maxRetries: 5,
-      initialBackoffDelay: 1000, // 1s
-      ...options
-    };
-
-    this.requestQueue = [];
-    this.isProcessingQueue = false;
-    this.apiCallCount = 0;
-    this.lastApiStatus = null;
-    
-    // Load existing call count
-    this.loadCallCount();
-  }
-
-  // Add a request to the queue
-  async addRequest(requestFn) {
-    return new Promise((resolve, reject) => {
-      this.requestQueue.push({
-        fn: requestFn,
-        resolve,
-        reject,
-        retryCount: 0
-      });
-
-      if (!this.isProcessingQueue) {
-        this.processQueue();
-      }
-    });
-  }
-
-  // Process the request queue with throttling
-  async processQueue() {
-    if (this.requestQueue.length === 0) {
-      this.isProcessingQueue = false;
-      return;
-    }
-
-    this.isProcessingQueue = true;
-    const { fn, resolve, reject, retryCount } = this.requestQueue.shift();
-
-    try {
-      const result = await fn();
-      
-      // Increment successful API call count
-      this.apiCallCount++;
-      this.lastApiStatus = 'success';
-      this.saveCallCount();
-      
-      resolve(result);
-    } catch (error) {
-      // Apply exponential backoff on failure
-      if (retryCount < this.options.maxRetries) {
-        const backoffDelay = this.options.initialBackoffDelay * Math.pow(2, retryCount);
-        console.log(`API request failed, retrying in ${backoffDelay}ms...`, error);
-        
-        // Push back into queue with increased retry count
-        this.requestQueue.unshift({
-          fn,
-          resolve,
-          reject,
-          retryCount: retryCount + 1
-        });
-        
-        this.lastApiStatus = 'retrying';
-        
-        setTimeout(() => {
-          this.processNextRequest();
-        }, backoffDelay);
-      } else {
-        console.error('API request failed after max retries:', error);
-        this.lastApiStatus = 'failed';
-        reject(error);
-      }
-    }
-
-    // Apply throttling delay before processing the next request
-    setTimeout(() => {
-      this.processNextRequest();
-    }, this.options.throttleDelay);
-  }
-
-  // Process the next request in the queue
-  processNextRequest() {
-    if (this.requestQueue.length > 0) {
-      this.processQueue();
-    } else {
-      this.isProcessingQueue = false;
-    }
-  }
-    // Process batch of requests in parallel with progress tracking
-  async processBatch(items, processFn, batchSize = 5, progressCallback = null) {
-    if (!items || !Array.isArray(items) || items.length === 0) {
-      console.warn("ProcessBatch called with empty or invalid items array");
-      if (progressCallback) progressCallback(-1); // Signal completion with empty batch
-      return [];
-    }
-
-    const total = items.length;
-    let processed = 0;
-    let results = [];
-    let errors = [];
-    
-    try {
-      // Process in batches
-      for (let i = 0; i < total; i += batchSize) {
-        const batch = items.slice(i, i + batchSize);
-        const batchPromises = batch.map(item => 
-          this.addRequest(() => processFn(item))
-        );
-        
-        // Wait for the current batch to complete
-        const batchResults = await Promise.allSettled(batchPromises);
-        
-        // Update progress
-        processed += batch.length;
-        if (progressCallback) {
-          const progress = Math.round((processed / total) * 100);
-          progressCallback(progress);
-        }
-        
-        // Collect results and track errors
-        batchResults.forEach((result, index) => {
-          if (result.status === 'fulfilled') {
-            results.push(result.value);
-          } else {
-            console.error(`Error processing item ${i + index}:`, result.reason);
-            errors.push({
-              itemIndex: i + index,
-              error: result.reason?.message || "Unknown error"
-            });
-            // Add null placeholder for failed items to maintain array index correlation
-            results.push(null);
-          }
-        });
-
-        // Allow a short break between batches to avoid overwhelming the browser
-        await new Promise(resolve => setTimeout(resolve, 10));
-      }
-    } catch (error) {
-      console.error("Batch processing encountered an error:", error);
-    } finally {
-      // Signal completion
-      if (progressCallback) {
-        progressCallback(-1); // -1 signals completion
-      }
-      
-      // Log a summary of errors if any occurred
-      if (errors.length > 0) {
-        console.warn(`Batch processing completed with ${errors.length} errors out of ${total} items`);
-      }
-    }
-    
-    return results;
-  }
-
-  // Save the API call count to storage
-  async saveCallCount() {
-    try {
-      await chrome.storage.local.set({ 'apiCallCount': this.apiCallCount });
-    } catch (error) {
-      console.error('Error saving API call count:', error);
-    }
-  }
-
-  // Load the API call count from storage
-  async loadCallCount() {
-    try {
-      const { apiCallCount } = await chrome.storage.local.get(['apiCallCount']);
-      this.apiCallCount = apiCallCount || 0;
-    } catch (error) {
-      console.error('Error loading API call count:', error);
-    }
-  }
-
-  // Reset API call counter
-  async resetApiCallCount() {
-    this.apiCallCount = 0;
-    await this.saveCallCount();
-  }
-
-  // Get the current API call count
-  getApiCallCount() {
-    return this.apiCallCount;
-  }
-  
-  // Get the last API status
-  getLastApiStatus() {
-    return this.lastApiStatus;
-  }
-}
-// --- END ApiRequestManager ---
+// Import our utility classes
+importScripts('./utils/securityHelper.js');
+importScripts('./utils/apiRequestManager.js');
 
 // Initialize the API request manager for throttling and rate limiting
 const apiRequestManager = new ApiRequestManager({
@@ -308,170 +25,42 @@ chrome.runtime.onInstalled.addListener(() => {
 
 // Handle messages from content script and popup
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  console.log("Background received message:", request.action);
-  
-  // Translation handler
   if (request.action === "translateText") {
     translateText(request.text)
-      .then(result => {
-        console.log("Translation completed successfully");
-        sendResponse(result);
-      })
+      .then(sendResponse)
       .catch(error => {
         console.error("Translation error:", error);
         sendResponse("Translation error: " + error.message);
       });
     return true; // Required for async sendResponse
   }
-  
-  // Explanation handler
   if (request.action === "explainText") {
     explainText(request.text)
-      .then(result => {
-        console.log("Explanation completed successfully");
-        sendResponse(result);
-      })
+      .then(sendResponse)
       .catch(error => {
         console.error("Explanation error:", error);
         sendResponse("Explanation error: " + error.message);
       });
     return true; // Required for async sendResponse
   }
-  
-  // API usage statistics handler
   if (request.action === "getApiUsage") {
-    try {
-      const stats = {
-        callCount: apiRequestManager.getApiCallCount(),
-        lastStatus: apiRequestManager.getLastApiStatus()
-      };
-      console.log("Returning API usage stats:", stats);
-      sendResponse(stats);
-    } catch (error) {
-      console.error("Error getting API usage stats:", error);
-      sendResponse({ callCount: 0, lastStatus: "unknown", error: error.message });
-    }
+    // Get API usage statistics
+    Promise.resolve({
+      callCount: apiRequestManager.getApiCallCount(),
+      lastStatus: apiRequestManager.getLastApiStatus()
+    }).then(sendResponse);
     return true;
   }
-  
-  // Reset API call counter handler
   if (request.action === "resetApiCallCount") {
     apiRequestManager.resetApiCallCount()
-      .then(() => {
-        console.log("API call count reset successfully");
-        sendResponse({ success: true });
-      })
+      .then(() => sendResponse({ success: true }))
       .catch(error => {
         console.error("Error resetting API call count:", error);
         sendResponse({ success: false, error: error.message });
       });
     return true;
   }
-  
-  // Check if API key exists handler
-  if (request.action === "checkApiKey") {
-    SecurityHelper.hasApiKey()
-      .then(hasKey => {
-        console.log("API key check result:", hasKey);
-        sendResponse({ hasKey });
-      })
-      .catch(error => {
-        console.error("Error checking API key:", error);
-        sendResponse({ hasKey: false, error: error.message });
-      });
-    return true;
-  }
-  
-  // Save API key handler
-  if (request.action === "saveApiKey") {
-    console.log("Saving API key (session-only:", request.sessionOnly, ")");
-    
-    if (!request.apiKey) {
-      console.error("Missing API key in request");
-      sendResponse({ success: false, error: "No API key provided" });
-      return true;
-    }
-    
-    SecurityHelper.storeApiKey(request.apiKey, request.sessionOnly)
-      .then(success => {
-        console.log("API key save result:", success);
-        if (success) {
-          // Mark that API key has been set
-          chrome.storage.local.set({ 'apiKeySet': true });
-          sendResponse({ success: true });
-        } else {
-          sendResponse({ success: false, error: "Failed to store API key" });
-        }
-      })
-      .catch(error => {
-        console.error("Error saving API key:", error);
-        sendResponse({ success: false, error: error.message });
-      });
-    return true;
-  }
-  
-  // Clear API key handler
-  if (request.action === "clearApiKey") {
-    SecurityHelper.clearApiKey()
-      .then(success => {
-        console.log("API key cleared:", success);
-        if (success) {
-          chrome.storage.local.remove('apiKeySet');
-          sendResponse({ success: true });
-        } else {
-          sendResponse({ success: false, error: "Failed to clear API key" });
-        }
-      })
-      .catch(error => {
-        console.error("Error clearing API key:", error);
-        sendResponse({ success: false, error: error.message });
-      });
-    return true;
-  }
-  
-  // Batch translation handler
-  if (request.action === "translateBatch") {
-    processBatchTranslation(request.texts, request.tabId)
-      .then(results => {
-        console.log("Batch translation complete", { count: results.length });
-        sendResponse({ success: true, results });
-      })
-      .catch(error => {
-        console.error("Batch translation error:", error);
-        sendResponse({ success: false, error: error.message });
-      });
-    return true;
-  }
-  
-  // Unknown action handler
-  console.warn("Unhandled message action:", request.action);
-  sendResponse({ success: false, error: "Unknown action" });
-  return true;
 });
-
-// Handle batch translation for page content
-async function processBatchTranslation(texts, tabId) {
-  if (!texts || !texts.length) {
-    console.warn("Empty texts array provided to batch translation");
-    return [];
-  }
-  
-  // Process texts in batches with progress updates
-  return await apiRequestManager.processBatch(
-    texts, 
-    translateText, 
-    5, 
-    (progress) => {
-      // Send progress updates to content script
-      if (tabId) {
-        chrome.tabs.sendMessage(tabId, {
-          action: 'updateProgress',
-          progress: progress
-        }).catch(err => console.error("Error sending progress update:", err));
-      }
-    }
-  );
-}
 
 chrome.contextMenus.onClicked.addListener(async (info, tab) => {
   if (info.menuItemId === "translateToHinglish" && info.selectionText) {

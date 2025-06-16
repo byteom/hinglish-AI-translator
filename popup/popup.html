@@ -23,9 +23,7 @@
         <button id="toggleApiKey" class="icon-button">👁️</button>
       </div>
       <button id="saveApiKey" class="button primary">Save API Key</button>
-    </div>
-
-    <div class="settings-section">
+    </div>    <div class="settings-section">
       <h2>Translation Settings</h2>
       <div class="setting-group">
         <label for="translationStyle">Translation Style:</label>
@@ -45,7 +43,33 @@
           <option value="moreEnglish">More English</option>
         </select>
       </div>
+      
+      <div class="setting-group">
+        <label for="sessionOnly">API Key Storage:</label>
+        <div class="checkbox-container">
+          <input type="checkbox" id="sessionOnly">
+          <span>Session Only (key will be deleted when browser closes)</span>
+        </div>
+      </div>
+      
       <button id="saveSettings" class="button primary">Save Settings</button>
+    </div>
+    
+    <div class="api-usage-section">
+      <h2>API Usage Statistics</h2>
+      <div class="usage-stats">
+        <div class="stat">
+          <span>API Calls Used:</span>
+          <span id="apiCallCount">0</span>
+        </div>
+        <div class="stat">
+          <span>Last Status:</span>
+          <span id="lastApiStatus">-</span>
+        </div>
+      </div>
+      <div class="usage-actions">
+        <button id="resetCounter" class="button">Reset Counter</button>
+      </div>
     </div>
 
     <div class="instructions">

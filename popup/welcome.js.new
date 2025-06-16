@@ -1,0 +1,77 @@
+// Use the background script for handling API keys to avoid CSP issues
+
+document.addEventListener('DOMContentLoaded', async () => {
+  console.log("Welcome page loaded");
+  
+  // Check if API key exists using background service
+  chrome.runtime.sendMessage({action: "checkApiKey"}, (response) => {
+    console.log("API key exists:", response.hasKey);
+    
+    if (response.hasKey) {
+      window.location.href = 'popup.html';
+      return;
+    }
+  });
+  
+  const apiKeyInput = document.getElementById('apiKeyInput');
+  const saveButton = document.getElementById('saveApiKey');
+  const sessionOnlyCheckbox = document.getElementById('sessionOnlyStorage');
+  
+  const errorMessage = document.createElement('div');
+  errorMessage.style.color = '#d93025';
+  errorMessage.style.marginTop = '10px';
+  document.querySelector('.setup').appendChild(errorMessage);
+
+  saveButton.addEventListener('click', async () => {
+    const apiKey = apiKeyInput.value.trim();
+    if (!apiKey) {
+      errorMessage.textContent = 'Please enter your API key';
+      return;
+    }
+    
+    // Simple validation - check if it looks like a Groq API key (gsk_ prefix)
+    if (!apiKey.startsWith('gsk_')) {
+      errorMessage.textContent = 'This doesn\'t look like a valid Groq API key. It should start with "gsk_"';
+      return;
+    }
+    
+    const sessionOnly = sessionOnlyCheckbox.checked;
+    saveButton.disabled = true;
+    saveButton.textContent = 'Validating...';
+    errorMessage.textContent = '';
+    
+    try {
+      // Call background script to save and validate API key
+      chrome.runtime.sendMessage(
+        {
+          action: "saveApiKey", 
+          apiKey: apiKey, 
+          sessionOnly: sessionOnly
+        }, 
+        (response) => {
+          saveButton.disabled = false;
+          saveButton.textContent = 'Save Key';
+          
+          if (response.success) {
+            console.log('API key saved successfully');
+            errorMessage.textContent = '';
+            
+            // Redirect to the main popup
+            window.location.href = 'popup.html';
+          } else {
+            errorMessage.textContent = 'Failed to save API key';
+            if (response.error) {
+              console.error('Error detail:', response.error);
+              errorMessage.textContent = 'Error: ' + response.error;
+            }
+          }
+        }
+      );
+    } catch (error) {
+      saveButton.disabled = false;
+      saveButton.textContent = 'Save Key';
+      console.error('Error saving API key:', error);
+      errorMessage.textContent = 'Error: ' + error.message;
+    }
+  });
+});

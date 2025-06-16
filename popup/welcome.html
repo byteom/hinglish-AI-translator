@@ -3,16 +3,70 @@
 <head>
   <title>Setup Groq API Key</title>
   <link rel="stylesheet" href="popup.css">
+  <style>
+    .loading {
+      display: inline-block;
+      width: 18px;
+      height: 18px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-radius: 50%;
+      border-top-color: #fff;
+      animation: spin 1s ease-in-out infinite;
+      margin-left: 8px;
+      vertical-align: middle;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    .note {
+      font-size: 0.85rem;
+      color: #666;
+      margin: 10px 0;
+    }
+    input[type="password"], input[type="text"] {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 1rem;
+      margin-bottom: 15px;
+    }
+    .session-option {
+      margin: 15px 0;
+    }
+    #saveApiKey {
+      min-width: 120px;
+    }
+    .info-block {
+      background-color: rgba(26, 115, 232, 0.1);
+      border-left: 4px solid #1a73e8;
+      padding: 12px;
+      margin: 15px 0;
+      border-radius: 4px;
+    }
+  </style>
 </head>
 <body>
   <div class="container">
     <h1>Welcome to Hinglish Translator</h1>
+    
+    <div class="info-block">
+      <p>To use this extension, you need a Groq API key. Your API key allows the extension to translate text between English and Hinglish.</p>
+    </div>
+    
     <div class="setup">
-      <p>Please enter your Groq API key to enable translations:</p>
-      <input type="password" id="apiKeyInput" placeholder="Enter your Groq API key">
-      <button id="saveApiKey">Save Key</button>
-      <p class="note">Your key will be stored locally in Chrome and only used for translation requests.</p>
-      <p class="note">Don't have a key? <a href="https://groq.com/" target="_blank">Get one from Groq</a></p>
+      <p>Please enter your Groq API key:</p>
+      <input type="password" id="apiKeyInput" placeholder="Enter your Groq API key (starts with gsk_)">
+      
+      <div class="session-option">
+        <input type="checkbox" id="sessionOnlyStorage">
+        <label for="sessionOnlyStorage">Session Only (key will be deleted when browser closes)</label>
+      </div>
+      
+      <button id="saveApiKey" class="primary-button">Save Key</button>
+      
+      <p class="note">Your key will be stored securely and only used for translation requests.</p>
+      <p class="note">Don't have a key? <a href="https://groq.com/signup" target="_blank">Get one from Groq</a></p>
     </div>
   </div>
   <script src="welcome.js"></script>
