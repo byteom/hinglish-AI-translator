@@ -1,18 +1,37 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8">
   <title>Setup Groq API Key</title>
   <link rel="stylesheet" href="popup.css">
+  <style>
+    .note {
+      font-size: 12px;
+      color: #666;
+      margin-top: 8px;
+    }
+    .message {
+      margin-top: 12px;
+      font-size: 14px;
+    }
+  </style>
 </head>
 <body>
   <div class="container">
     <h1>Welcome to Hinglish Translator</h1>
     <div class="setup">
       <p>Please enter your Groq API key to enable translations:</p>
-      <input type="password" id="apiKeyInput" placeholder="Enter your Groq API key">
-      <button id="saveApiKey">Save Key</button>
+      <label for="apiKeyInput" style="display: none;">Groq API Key</label>
+      <input type="password" id="apiKeyInput" placeholder="Enter your Groq API key" autocomplete="off">
+      <button id="saveApiKey" type="submit">Save Key</button>
+
+      <div id="messageBox" class="message"></div>
+
       <p class="note">Your key will be stored locally in Chrome and only used for translation requests.</p>
-      <p class="note">Don't have a key? <a href="https://groq.com/" target="_blank">Get one from Groq</a></p>
+      <p class="note">
+        Don’t have a key?
+        <a href="https://groq.com/" target="_blank">Get one from Groq</a>
+      </p>
     </div>
   </div>
   <script src="welcome.js"></script>

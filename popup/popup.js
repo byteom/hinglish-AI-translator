@@ -123,24 +123,38 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   });
   
-  // Function to show success message
-  function showSuccess(message) {
-    const successDiv = document.createElement('div');
-    successDiv.className = 'success-message';
-    successDiv.textContent = message;
-    document.body.appendChild(successDiv);
-    setTimeout(() => {
-      successDiv.remove();
-    }, 3000);
+ // Function to show success and failure message by a single function showmessage
+function showMessage(message, type = 'success') {
+  let messageBox = document.getElementById('messageBox');
+  if (!messageBox) {
+    messageBox = document.createElement('div');
+    messageBox.id = 'messageBox';
+    messageBox.style.position = 'fixed';
+    messageBox.style.bottom = '20px';
+    messageBox.style.left = '50%';
+    messageBox.style.transform = 'translateX(-50%)';
+    messageBox.style.padding = '12px 20px';
+    messageBox.style.borderRadius = '6px';
+    messageBox.style.fontSize = '14px';
+    messageBox.style.zIndex = '9999';
+    messageBox.style.boxShadow = '0 2px 8px rgba(0,0,0,0.2)';
+    document.body.appendChild(messageBox);
   }
-  
-  // Function to show error message
-  function showError(message) {
-    const errorDiv = document.createElement('div');
-    errorDiv.className = 'error-message';
-    errorDiv.textContent = message;
-    document.body.appendChild(errorDiv);
-    setTimeout(() => {
-      errorDiv.remove();
-    }, 3000);
-  }
+
+  messageBox.style.backgroundColor = type === 'error' ? '#d93025' : '#0b8043';
+  messageBox.style.color = '#fff';
+  messageBox.textContent = message;
+
+  clearTimeout(messageBox.timeout);
+  messageBox.timeout = setTimeout(() => {
+    messageBox.remove();
+  }, 3000);
+}
+
+function showSuccess(msg) {
+  showMessage(msg, 'success');
+}
+
+function showError(msg) {
+  showMessage(msg, 'error');
+}
