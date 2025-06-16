@@ -1,67 +1,31 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Hinglish Translator</title>
-  <link rel="stylesheet" href="popup.css">
+  <title>Hinglish AI Translator</title>
+  <style>
+    body { font-family: Arial; padding: 10px; width: 300px; }
+    textarea, select { width: 100%; margin: 5px 0; }
+    button { width: 100%; margin: 5px 0; }
+    #output { margin-top: 10px; padding: 8px; background: #f3f3f3; border: 1px solid #ccc; }
+  </style>
 </head>
 <body>
-  <div class="container">
-    <div class="header">
-      <h1>Hinglish Translator</h1>
-      <div class="api-key-section">
-        <div class="api-key-status" id="apiKeyStatus">No API key configured</div>
-        <div class="api-key-actions">
-          <button id="changeApiKey" class="button">Change Key</button>
-          <button id="removeApiKey" class="button">Remove Key</button>
-        </div>
-      </div>
-    </div>
+  <h2>Hinglish Translator</h2>
 
-    <div class="api-key-container" id="apiKeyContainer" style="display: none;">
-      <div class="input-group">
-        <input type="password" id="apiKey" placeholder="Enter your Groq API key">
-        <button id="toggleApiKey" class="icon-button">👁️</button>
-      </div>
-      <button id="saveApiKey" class="button primary">Save API Key</button>
-    </div>
+  <textarea id="input-text" rows="4" placeholder="Enter Hinglish text..."></textarea>
 
-    <div class="settings-section">
-      <h2>Translation Settings</h2>
-      <div class="setting-group">
-        <label for="translationStyle">Translation Style:</label>
-        <select id="translationStyle" class="select">
-          <option value="hinglish">Hinglish (Default)</option>
-          <option value="hindi">Hindi (Devanagari)</option>
-          <option value="roman">Roman (Hindi in English)</option>
-          <option value="formal">Formal Hinglish</option>
-          <option value="casual">Casual Hinglish</option>
-        </select>
-      </div>
-      <div class="setting-group">
-        <label for="languageLevel">Language Level:</label>
-        <select id="languageLevel" class="select">
-          <option value="balanced">Balanced (Default)</option>
-          <option value="moreHindi">More Hindi</option>
-          <option value="moreEnglish">More English</option>
-        </select>
-      </div>
-      <button id="saveSettings" class="button primary">Save Settings</button>
-    </div>
+  <label for="tone-select">Select Tone:</label>
+  <select id="tone-select">
+    <option value="formal">Formal</option>
+    <option value="informal">Informal</option>
+  </select>
 
-    <div class="instructions">
-      <h2>How to Use</h2>
-      <ol>
-        <li>Select text on any webpage</li>
-        <li>Right-click and choose:
-          <ul>
-            <li>"Translate to Hinglish" for translation</li>
-            <li>"Explain in Hinglish" for AI explanation</li>
-          </ul>
-        </li>
-        <li>The translation/explanation will appear in a popup</li>
-      </ol>
-    </div>
-  </div>
-  <script src="popup.js"></script>
+  <button id="translate-btn">Translate</button>
+  <button id="explain-btn">Explain This</button>
+
+  <div id="output"></div>
+  <p id="grammar-explanation"></p>
+
+  <script type="module" src="popup.js"></script>
 </body>
 </html>
