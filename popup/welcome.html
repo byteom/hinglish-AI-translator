@@ -22,20 +22,22 @@
       font-size: 0.85rem;
       color: #666;
       margin: 10px 0;
-    }
-    input[type="password"], input[type="text"] {
+    }    input[type="password"], input[type="text"] {
       width: 100%;
-      padding: 10px;
+      padding: 8px 10px;
       border: 1px solid #ccc;
       border-radius: 4px;
-      font-size: 1rem;
-      margin-bottom: 15px;
+      font-size: 13px;
+      margin-bottom: 12px;
+      height: 20px;
     }
     .session-option {
       margin: 15px 0;
-    }
-    #saveApiKey {
-      min-width: 120px;
+    }    #saveApiKey {
+      min-width: 100px;
+      height: 32px;
+      font-size: 13px;
+      padding: 6px 14px;
     }
     .info-block {
       background-color: rgba(26, 115, 232, 0.1);
@@ -43,6 +45,11 @@
       padding: 12px;
       margin: 15px 0;
       border-radius: 4px;
+    }
+    .note-inline {
+      font-size: 0.8rem;
+      color: #666;
+      margin-left: 5px;
     }
   </style>
 </head>
@@ -56,17 +63,16 @@
     
     <div class="setup">
       <p>Please enter your Groq API key:</p>
-      <input type="password" id="apiKeyInput" placeholder="Enter your Groq API key (starts with gsk_)">
-      
-      <div class="session-option">
+      <input type="password" id="apiKeyInput" placeholder="Enter Groq API key (starts with gsk_)">
+        <div class="session-option">
         <input type="checkbox" id="sessionOnlyStorage">
-        <label for="sessionOnlyStorage">Session Only (key will be deleted when browser closes)</label>
+        <label for="sessionOnlyStorage">Session Only</label>
+        <span class="note-inline">(key will be deleted when browser closes)</span>
       </div>
       
       <button id="saveApiKey" class="primary-button">Save Key</button>
-      
-      <p class="note">Your key will be stored securely and only used for translation requests.</p>
-      <p class="note">Don't have a key? <a href="https://groq.com/signup" target="_blank">Get one from Groq</a></p>
+        <p class="note">Your key will be stored securely and only used for translation requests.</p>
+      <p class="note">Don't have a key? <a href="https://console.groq.com/keys" target="_blank">Click here</a></p>
     </div>
   </div>
   <script src="welcome.js"></script>

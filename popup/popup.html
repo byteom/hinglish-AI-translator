@@ -15,15 +15,24 @@
           <button id="removeApiKey" class="button">Remove Key</button>
         </div>
       </div>
-    </div>
-
-    <div class="api-key-container" id="apiKeyContainer" style="display: none;">
+    </div>    <div class="api-key-container" id="apiKeyContainer" style="display: none;">
       <div class="input-group">
-        <input type="password" id="apiKey" placeholder="Enter your Groq API key">
-        <button id="toggleApiKey" class="icon-button">👁️</button>
+        <input type="password" id="apiKey" placeholder="Enter Groq API key (gsk_...)">
+        <button id="toggleApiKey" class="icon-button">Show</button>
       </div>
-      <button id="saveApiKey" class="button primary">Save API Key</button>
-    </div>    <div class="settings-section">
+      <div class="api-key-options">
+        <div class="checkbox-container compact">
+          <input type="checkbox" id="sessionOnly">
+          <span>Session Only</span>
+        </div>
+      </div>
+      <div class="save-key-row">
+        <div class="key-help">
+          <a href="https://console.groq.com/keys" id="getApiKey" class="get-api-link" target="_blank">Get key</a>
+        </div>
+        <button id="saveApiKey" class="button primary">Save</button>
+      </div>
+    </div><div class="settings-section">
       <h2>Translation Settings</h2>
       <div class="setting-group">
         <label for="translationStyle">Translation Style:</label>
@@ -43,16 +52,7 @@
           <option value="moreEnglish">More English</option>
         </select>
       </div>
-      
-      <div class="setting-group">
-        <label for="sessionOnly">API Key Storage:</label>
-        <div class="checkbox-container">
-          <input type="checkbox" id="sessionOnly">
-          <span>Session Only (key will be deleted when browser closes)</span>
-        </div>
-      </div>
-      
-      <button id="saveSettings" class="button primary">Save Settings</button>
+        <button id="saveSettings" class="button primary">Save Settings</button>
     </div>
     
     <div class="api-usage-section">

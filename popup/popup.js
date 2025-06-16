@@ -15,7 +15,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   const removeApiKeyBtn = document.getElementById('removeApiKey');
   const apiKeyInput = document.getElementById('apiKey');
   const saveApiKeyBtn = document.getElementById('saveApiKey');
-  const toggleApiKeyBtn = document.getElementById('toggleApiKey');  const translationStyle = document.getElementById('translationStyle');
+  const toggleApiKeyBtn = document.getElementById('toggleApiKey');
+  const translationStyle = document.getElementById('translationStyle');
   const languageLevel = document.getElementById('languageLevel');
   const translationMode = document.getElementById('translationMode');
   const sessionOnlyCheckbox = document.getElementById('sessionOnly');
@@ -23,44 +24,84 @@ document.addEventListener('DOMContentLoaded', async () => {
   const apiUsageStatus = document.getElementById('lastApiStatus'); // Match the ID in HTML
   const resetApiCountBtn = document.getElementById('resetCounter'); // Match the ID in HTML
 
+  // Helper function to show loading state on buttons
+  function setButtonLoading(button, isLoading, originalText) {
+    if (isLoading) {
+      button.disabled = true;
+      const spinner = document.createElement('span');
+      spinner.className = 'spinner';
+      button.setAttribute('data-original-text', button.textContent);
+      button.textContent = ' ' + originalText;
+      button.prepend(spinner);
+    } else {
+      button.disabled = false;
+      button.textContent = button.getAttribute('data-original-text') || originalText;
+    }
+  }
+
+  // Helper function for showing messages
+  function showMessage(message, isError = false) {
+    const messageElement = document.createElement('div');
+    messageElement.className = isError ? 'error-message' : 'success-message';
+    messageElement.textContent = message;
+    
+    // Remove any existing messages
+    document.querySelectorAll('.error-message, .success-message').forEach(el => el.remove());
+    
+    // Add the new message at the top of the container
+    const container = document.querySelector('.container');
+    if (container) {
+      container.insertBefore(messageElement, container.firstChild);
+      
+      // Auto-remove after 4 seconds
+      setTimeout(() => messageElement.remove(), 4000);
+    }
+  }
   // Check if API key exists
   let apiKeyExists = false;
   chrome.runtime.sendMessage({action: "checkApiKey"}, (response) => {
     apiKeyExists = response.hasKey;
     if (apiKeyExists) {
-      apiKeyStatus.textContent = "API key configured";
+      const storageTypeText = response.storageType === 'session' ? 
+        "API key configured (Session only)" : 
+        "API key configured";
+      apiKeyStatus.textContent = storageTypeText;
       apiKeyStatus.style.backgroundColor = "#0b8043";
+      
+      // Set the checkbox to match stored preference if editing API key
+      if (sessionOnlyCheckbox) {
+        sessionOnlyCheckbox.checked = response.storageType === 'session';
+      }
     } else {
       apiKeyStatus.textContent = "No API key configured";
       apiKeyStatus.style.backgroundColor = "#d93025";
     }
   });
+
   // Load API usage stats
   function updateApiUsageStats() {
-    console.log("Updating API usage stats");
     chrome.runtime.sendMessage({action: "getApiUsage"}, (stats) => {
-      console.log("Received API usage stats:", stats);
-      
       if (stats && apiUsageCount) {
-        apiUsageCount.textContent = `${stats.callCount || 0}`;
-        console.log("Updated apiUsageCount:", apiUsageCount.textContent);
-        
-        if (stats.lastStatus && apiUsageStatus) {
+        apiUsageCount.textContent = `${stats.callCount || 0} calls`;
+          if (stats.lastStatus && apiUsageStatus) {
           let statusColor = "#1a73e8"; // Default blue
-          if (stats.lastStatus === "success") statusColor = "#0b8043"; // Green
-          else if (stats.lastStatus === "failed") statusColor = "#d93025"; // Red
-          else if (stats.lastStatus === "retrying") statusColor = "#f29900"; // Orange
+          let statusText = stats.lastStatus || "Unknown";
           
-          apiUsageStatus.textContent = stats.lastStatus || "Unknown";
+          // Convert status to more user-friendly text
+          if (stats.lastStatus === "success") {
+            statusColor = "#0b8043"; // Green
+            statusText = "Success";
+          } else if (stats.lastStatus === "failed") {
+            statusColor = "#d93025"; // Red
+            statusText = "Failed";
+          } else if (stats.lastStatus === "retrying") {
+            statusColor = "#f29900"; // Orange
+            statusText = "Retrying...";
+          }
+          
+          apiUsageStatus.textContent = statusText;
           apiUsageStatus.style.color = statusColor;
-          console.log("Updated apiUsageStatus:", apiUsageStatus.textContent, statusColor);
         }
-      } else {
-        console.warn("Missing stats or DOM elements:", {
-          stats: stats,
-          apiUsageCount: apiUsageCount,
-          apiUsageStatus: apiUsageStatus
-        });
       }
     });
   }
@@ -103,14 +144,13 @@ document.addEventListener('DOMContentLoaded', async () => {
       const text = translateInput.value.trim();
       if (!text) return;
       
-      translateBtn.disabled = true;
-      translateResult.textContent = "Translating...";
+      setButtonLoading(translateBtn, true, "Translating...");
       
       try {
         chrome.runtime.sendMessage(
           {action: "translateText", text: text},
           (response) => {
-            translateBtn.disabled = false;
+            setButtonLoading(translateBtn, false);
             
             if (typeof response === 'string') {
               translateResult.textContent = response;
@@ -122,7 +162,7 @@ document.addEventListener('DOMContentLoaded', async () => {
           }
         );
       } catch (error) {
-        translateBtn.disabled = false;
+        setButtonLoading(translateBtn, false);
         translateResult.textContent = "Error: " + error.message;
       }
     });
@@ -134,14 +174,13 @@ document.addEventListener('DOMContentLoaded', async () => {
       const text = explainInput.value.trim();
       if (!text) return;
       
-      explainBtn.disabled = true;
-      explainResult.textContent = "Generating explanation...";
+      setButtonLoading(explainBtn, true, "Generating explanation...");
       
       try {
         chrome.runtime.sendMessage(
           {action: "explainText", text: text},
           (response) => {
-            explainBtn.disabled = false;
+            setButtonLoading(explainBtn, false);
             
             if (typeof response === 'string') {
               explainResult.textContent = response;
@@ -153,8 +192,16 @@ document.addEventListener('DOMContentLoaded', async () => {
           }
         );
       } catch (error) {
-        explainBtn.disabled = false;
+        setButtonLoading(explainBtn, false);
         explainResult.textContent = "Error: " + error.message;
+      }
+    });
+    
+    // Add keyboard shortcut (Ctrl+Enter) for explanation
+    explainInput.addEventListener('keydown', (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+        explainBtn.click();
+        e.preventDefault();
       }
     });
   }
@@ -166,46 +213,47 @@ document.addEventListener('DOMContentLoaded', async () => {
         const [tab] = await chrome.tabs.query({active: true, currentWindow: true});
         
         if (tab) {
-          translatePageBtn.textContent = "Translating...";
-          translatePageBtn.disabled = true;
+          setButtonLoading(translatePageBtn, true, "Translating...");
           
           // Send message to content script
           await chrome.tabs.sendMessage(tab.id, {action: "translatePage"});
-          
-          // Update UI
+            // Update UI
           setTimeout(() => {
-            translatePageBtn.textContent = "Translate This Page";
-            translatePageBtn.disabled = false;
+            setButtonLoading(translatePageBtn, false, "Translate This Page");
+            showMessage("Page translation completed!");
             // Update API usage stats
             updateApiUsageStats();
           }, 1000);
         }
-      } catch (error) {
-        console.error("Error translating page:", error);
-        translatePageBtn.textContent = "Translate This Page";
-        translatePageBtn.disabled = false;
+      } catch (error) {        console.error("Error translating page:", error);
+        setButtonLoading(translatePageBtn, false, "Translate This Page");
+        showMessage("Page translation failed: " + error.message, true);
       }
     });
   }
 
   // Change API key button click handler
-  if (changeApiKeyBtn) {
-    changeApiKeyBtn.addEventListener('click', () => {
-      apiKeyContainer.style.display = 'block';
+  if (changeApiKeyBtn) {    changeApiKeyBtn.addEventListener('click', () => {
+      // Use the smooth transition class
+      apiKeyContainer.classList.remove('hidden');
+      apiKeyContainer.style.display = 'flex';
     });
   }
 
   // Remove API key button click handler
-  if (removeApiKeyBtn) {
-    removeApiKeyBtn.addEventListener('click', async () => {
+  if (removeApiKeyBtn) {    removeApiKeyBtn.addEventListener('click', async () => {
       if (confirm('Are you sure you want to remove your API key?')) {
+        setButtonLoading(removeApiKeyBtn, true, "Removing...");
         chrome.runtime.sendMessage({action: "clearApiKey"}, (response) => {
+          setButtonLoading(removeApiKeyBtn, false, "Remove Key");
           if (response.success) {
             apiKeyStatus.textContent = "No API key configured";
             apiKeyStatus.style.backgroundColor = "#d93025";
-            apiKeyContainer.style.display = 'block';
+            apiKeyContainer.classList.remove('hidden');
+            apiKeyContainer.style.display = 'flex';
+            showMessage("API key removed successfully");
           } else {
-            alert("Failed to remove API key: " + (response.error || "Unknown error"));
+            showMessage("Failed to remove API key: " + (response.error || "Unknown error"), true);
           }
         });
       }
@@ -214,22 +262,20 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // Save API key button click handler
   if (saveApiKeyBtn) {
-    saveApiKeyBtn.addEventListener('click', async () => {
-      const apiKey = apiKeyInput.value.trim();
+    saveApiKeyBtn.addEventListener('click', async () => {      const apiKey = apiKeyInput.value.trim();
       
       if (!apiKey) {
-        alert("Please enter an API key");
+        showMessage("Please enter an API key", true);
         return;
       }
       
       // Simple validation
       if (!apiKey.startsWith('gsk_')) {
-        alert("This doesn't look like a valid Groq API key. It should start with 'gsk_'");
+        showMessage("This doesn't look like a valid Groq API key. It should start with 'gsk_'", true);
         return;
       }
       
-      saveApiKeyBtn.textContent = "Saving...";
-      saveApiKeyBtn.disabled = true;
+      setButtonLoading(saveApiKeyBtn, true, "Saving...");
       
       const sessionOnly = sessionOnlyCheckbox.checked;
       
@@ -240,82 +286,86 @@ document.addEventListener('DOMContentLoaded', async () => {
             apiKey: apiKey, 
             sessionOnly: sessionOnly
           }, 
-          (response) => {
-            saveApiKeyBtn.textContent = "Save API Key";
-            saveApiKeyBtn.disabled = false;
-            
+          (response) => {            setButtonLoading(saveApiKeyBtn, false, "Save API Key");
             if (response.success) {
               apiKeyStatus.textContent = "API key configured";
               apiKeyStatus.style.backgroundColor = "#0b8043";
-              apiKeyContainer.style.display = 'none';
+              
+              // Use smooth transition
+              apiKeyContainer.classList.add('hidden');
+              setTimeout(() => {
+                apiKeyContainer.style.display = 'none';
+                apiKeyContainer.classList.remove('hidden');
+              }, 300);
+              
               apiKeyInput.value = '';
+              showMessage("API key saved successfully!");
             } else {
-              alert("Failed to save API key: " + (response.error || "Unknown error"));
+              showMessage("Failed to save API key: " + (response.error || "Unknown error"), true);
             }
           }
         );
-      } catch (error) {
-        saveApiKeyBtn.textContent = "Save API Key";
-        saveApiKeyBtn.disabled = false;
-        alert("Error saving API key: " + error.message);
+      } catch (error) {        setButtonLoading(saveApiKeyBtn, false, "Save API Key");
+        showMessage("Error saving API key: " + error.message, true);
       }
     });
   }
 
   // Toggle API key visibility button click handler
-  if (toggleApiKeyBtn) {
-    toggleApiKeyBtn.addEventListener('click', () => {
+  if (toggleApiKeyBtn) {    toggleApiKeyBtn.addEventListener('click', () => {
       if (apiKeyInput.type === "password") {
         apiKeyInput.type = "text";
-        toggleApiKeyBtn.textContent = "🙈";
+        toggleApiKeyBtn.textContent = "Hide";
       } else {
         apiKeyInput.type = "password";
-        toggleApiKeyBtn.textContent = "👁️";
+        toggleApiKeyBtn.textContent = "Show";
       }
     });
   }
 
   // Save translation settings when they change
-  if (translationStyle) {
-    translationStyle.addEventListener('change', async () => {
+  if (translationStyle) {    translationStyle.addEventListener('change', async () => {
       await chrome.storage.local.set({
         'translationStyle': translationStyle.value
       });
+      showMessage(`Translation style updated to: ${translationStyle.options[translationStyle.selectedIndex].text}`);
     });
   }
 
-  if (languageLevel) {
-    languageLevel.addEventListener('change', async () => {
+  if (languageLevel) {    languageLevel.addEventListener('change', async () => {
       await chrome.storage.local.set({
         'languageLevel': languageLevel.value
       });
+      showMessage(`Language level updated to: ${languageLevel.options[languageLevel.selectedIndex].text}`);
     });
   }
 
-  if (translationMode) {
-    translationMode.addEventListener('change', async () => {
+  if (translationMode) {    translationMode.addEventListener('change', async () => {
       await chrome.storage.local.set({
         'translationMode': translationMode.value
       });
+      showMessage(`Translation mode updated to: ${translationMode.options[translationMode.selectedIndex].text}`);
     });
   }
   
-  if (sessionOnlyCheckbox) {
-    sessionOnlyCheckbox.addEventListener('change', async () => {
+  if (sessionOnlyCheckbox) {    sessionOnlyCheckbox.addEventListener('change', async () => {
       await chrome.storage.local.set({
         'sessionOnly': sessionOnlyCheckbox.checked
       });
+      showMessage(`API key storage set to: ${sessionOnlyCheckbox.checked ? "Session Only" : "Persistent"}`);
     });
   }
   // Reset API counter
   if (resetApiCountBtn) {
     resetApiCountBtn.addEventListener('click', () => {
       if (confirm("Reset API call counter to zero?")) {
-        chrome.runtime.sendMessage({action: "resetApiCallCount"}, (response) => {
+        setButtonLoading(resetApiCountBtn, true, "Resetting...");
+        chrome.runtime.sendMessage({action: "resetApiCount"}, (response) => {
+          setButtonLoading(resetApiCountBtn, false, "Reset Counter");
           if (response && response.success) {
-            console.log("API call counter reset successfully");
+            showMessage("API call counter reset successfully");
           } else {
-            console.error("Failed to reset API call counter", response && response.error);
+            showMessage("Failed to reset API call counter", true);
           }
           updateApiUsageStats();
         });

@@ -31,13 +31,16 @@ document.addEventListener('DOMContentLoaded', () => {
   const apiKeyInput = document.getElementById('apiKeyInput');
   const saveButton = document.getElementById('saveApiKey');
   const sessionOnlyCheckbox = document.getElementById('sessionOnlyStorage');
-  
-  // Check if API key exists - if it does, redirect to main popup
+    // Check if API key exists - if it does, redirect to main popup
   chrome.runtime.sendMessage({action: "checkApiKey"}, (response) => {
     console.log("API key exists check:", response);
     
     if (response && response.hasKey === true) {
-      successMessage.textContent = "API key already configured!";
+      const storageTypeText = response.storageType === 'session' ? 
+        "API key already configured! (Session only)" : 
+        "API key already configured!";
+      
+      successMessage.textContent = storageTypeText;
       successMessage.style.display = 'block';
       
       // Redirect with small delay to show the success message
@@ -127,9 +130,9 @@ document.addEventListener('DOMContentLoaded', () => {
         saveButton.disabled = false;
         saveButton.textContent = 'Save Key';
         
-        if (response && response.success) {
-          // Show success message
-          successMessage.textContent = 'API key saved successfully!';
+        if (response && response.success) {          // Show success message
+          const storageText = sessionOnly ? 'API key saved successfully! (Session only)' : 'API key saved successfully!';
+          successMessage.textContent = storageText;
           successMessage.style.display = 'block';
           
           // Clear input field

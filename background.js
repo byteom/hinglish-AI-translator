@@ -49,7 +49,6 @@ class SecurityHelper {
       return false;
     }
   }
-
   // Retrieve the stored API key
   static async getApiKey() {
     try {
@@ -71,6 +70,17 @@ class SecurityHelper {
   static async hasApiKey() {
     const { groqApiKey } = await chrome.storage.local.get(['groqApiKey']);
     return !!groqApiKey;
+  }
+  
+  // Get the API key storage type (session-only or persistent)
+  static async getApiKeyStorageType() {
+    try {
+      const { apiKeyInSession } = await chrome.storage.local.get(['apiKeyInSession']);
+      return apiKeyInSession ? 'session' : 'persistent';
+    } catch (error) {
+      console.error('Error getting API key storage type:', error);
+      return null;
+    }
   }
 
   // Clear the stored API key
@@ -367,13 +377,12 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       });
     return true;
   }
-  
-  // Check if API key exists handler
+    // Check if API key exists handler
   if (request.action === "checkApiKey") {
-    SecurityHelper.hasApiKey()
-      .then(hasKey => {
-        console.log("API key check result:", hasKey);
-        sendResponse({ hasKey });
+    Promise.all([SecurityHelper.hasApiKey(), SecurityHelper.getApiKeyStorageType()])
+      .then(([hasKey, storageType]) => {
+        console.log("API key check result:", hasKey, "Storage type:", storageType);
+        sendResponse({ hasKey, storageType });
       })
       .catch(error => {
         console.error("Error checking API key:", error);
