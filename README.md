@@ -1,4 +1,3 @@
-
 # 🚀 Hinglish Translator - Chrome Extension
 
 A powerful and intuitive Chrome extension that brings seamless translation and AI-powered explanations to your browsing experience. Transform any English text into Hinglish (Hindi written in English letters) or Hindi with just a right-click!
@@ -21,14 +20,14 @@ A powerful and intuitive Chrome extension that brings seamless translation and A
 
 ### 🤖 AI-Powered Features
 - **Smart Translation** - Context-aware translations that maintain the original meaning
-- **AI Explanations** - Get detailed explanations of selected text in your preferred language style
+- **AI Explanations** - Get detailed explanations of the selected text in your preferred language style
 - **Natural Language Processing** - Powered by advanced Groq AI models
 
 ### 🎯 Easy to Use
 - Right-click on any selected text
 - Choose between translation or explanation
-- Instant results in a beautiful popup
-- No page reload required
+- View instant results in a sleek popup window
+- No need to reload the page
 
 ## 🛠️ Technical Implementation
 
@@ -65,20 +64,20 @@ A powerful and intuitive Chrome extension that brings seamless translation and A
 ## 💡 Usage Guide
 
 ### Basic Translation
-1. Select text on any webpage
-2. Right-click and choose "Translate to Hinglish"
-3. View the translation in the popup
+- Select text on any webpage
+- Right-click and choose "Translate to Hinglish"
+- View the translation in the popup
 
 ### AI Explanation
-1. Select text on any webpage
-2. Right-click and choose "Explain in Hinglish"
-3. Get a detailed explanation in your preferred style
+- Select text on any webpage
+- Right-click and choose "Explain in Hinglish"
+- Get a detailed explanation in your preferred style
 
 ### Customizing Settings
-1. Click the extension icon
-2. Choose your preferred translation style
-3. Select your language level
-4. Save settings
+- Click the extension icon
+- Choose your preferred translation style
+- Select your language level
+- Save settings
 
 ## 🔒 Security Features
 - Secure API key storage
@@ -89,23 +88,11 @@ A powerful and intuitive Chrome extension that brings seamless translation and A
 ## 🛠️ Development
 
 ### Project Structure
-```
-hinglish-translator/
-├── manifest.json
-├── background.js
-├── content.js
-├── popup/
-│   ├── popup.html
-│   ├── popup.js
-│   ├── popup.css
-│   └── welcome.html
-└── README.md
-```
 
 ### Key Components
-- **background.js**: Handles API calls and context menu
-- **content.js**: Manages page content and translations
-- **popup/**: Contains UI components and settings
+- `background.js`: Handles API calls and context menu
+- `content.js`: Manages page content and translations
+- `popup/`: Contains UI components and settings
 
 ## 🎯 Performance Optimization
 - Efficient API calls
@@ -114,11 +101,11 @@ hinglish-translator/
 - Optimized UI rendering
 
 ## 🔄 Future Enhancements
-- [ ] Support for more languages
-- [ ] Batch translation
-- [ ] Custom translation rules
-- [ ] Translation history
-- [ ] Offline mode
+- Support for more languages
+- Batch translation
+- Custom translation rules
+- Translation history
+- Offline mode
 
 ## 🤝 Contributing
 We welcome contributions! Please read our [Contribution Guidelines](CONTRIBUTING.md) before making any changes.
@@ -132,11 +119,14 @@ This project is licensed under the terms of our [License Agreement](LICENSE.md).
 - All contributors and users
 
 ## 📞 Support
-For support, please open an issue in the repository or contact the maintainers. 
+For support, please open an issue in the repository or contact the maintainers.
 
 ---
 
+<<<<<<< patch-1
 Made with ❤️ by [Om Singh] - A passionate developer dedicated to making language translation accessible to everyone!
+=======
+ Crafted with ❤️ by [Om Singh] - A passionate developer dedicated to making language translation accessible to everyone!
 ```
 
 Key changes made:
@@ -144,3 +134,4 @@ Key changes made:
 2. Updated the "License" section link to point to `LICENSE.md`
 3. Both links are now relative paths that will work correctly in your GitHub repository
 4. Maintained all existing content and formatting while just updating these two links
+>>>>>>> main

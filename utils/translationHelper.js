@@ -1,13 +1,16 @@
 // Utility functions for text processing and translation
 class TranslationHelper {
-    static async translateWithQroq(text, apiKey) {
+    static async translateWithGroq(text, apiKey) {
       try {
-        const response = await fetch('https://api.qroq.ai/translate', {
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 10000); // 10sec timeout
+        const response = await fetch('https://api.groq.ai/translate', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${apiKey}`
           },
+          signal: controller.signal, //Required to make abort work
           body: JSON.stringify({
             text: text,
             source_lang: 'en',
@@ -17,7 +20,8 @@ class TranslationHelper {
         });
         
         if (!response.ok) {
-          throw new Error(`API error: ${response.status}`);
+          const errorMsg = await response.text();
+          throw new Error(`API error ${response.status}: ${errorMsg}`);
         }
         
         const data = await response.json();

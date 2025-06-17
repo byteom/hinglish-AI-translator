@@ -1,7 +1,7 @@
 // Listen for messages from popup or background script
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (request.action === "translatePage") {
-      translatePageContent();
+        translatePageContent();
     }
 });
 
@@ -44,37 +44,37 @@ async function translatePageContent() {
     document.body.appendChild(progressContainer);
 
     try {
-      // Get user preference for translation mode
-      const { translationMode } = await chrome.storage.local.get(['translationMode']);
-      const mode = translationMode || 'paragraphs';
-      
-      let translatedCount = 0;
-      let totalElements = 0;
+        // Get user preference for translation mode
+        const { translationMode } = await chrome.storage.local.get(['translationMode']);
+        const mode = translationMode || 'paragraphs';
+        
+        let translatedCount = 0;
+        let totalElements = 0;
 
-      if (mode === 'paragraphs') {
-        translatedCount = await translateParagraphs(progressText, progressFill);
-        totalElements = document.querySelectorAll('p, h1, h2, h3, h4, h5, h6, li, span, div').length;
-      } else {
-        translatedCount = await translateAllText(progressText, progressFill);
-        const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, null, false);
-        while (walker.nextNode()) {
-          if (walker.currentNode.textContent.trim() && 
-              walker.currentNode.parentElement && 
-              !walker.currentNode.parentElement.classList.contains('hinglish-translated')) {
-            totalElements++;
-          }
+        if (mode === 'paragraphs') {
+            translatedCount = await translateParagraphs(progressText, progressFill);
+            totalElements = document.querySelectorAll('p, h1, h2, h3, h4, h5, h6, li, span, div').length;
+        } else {
+            translatedCount = await translateAllText(progressText, progressFill);
+            const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, null, false);
+            while (walker.nextNode()) {
+                if (walker.currentNode.textContent.trim() && 
+                    walker.currentNode.parentElement && 
+                    !walker.currentNode.parentElement.classList.contains('hinglish-translated')) {
+                    totalElements++;
+                }
+            }
         }
-      }
 
-      progressText.textContent = 'Translation complete!';
-      progressContainer.style.backgroundColor = '#0b8043';
-      progressFill.style.width = '100%';
-      setTimeout(() => progressContainer.remove(), 2000);
+        progressText.textContent = 'Translation complete!';
+        progressContainer.style.backgroundColor = '#0b8043';
+        progressFill.style.width = '100%';
+        setTimeout(() => progressContainer.remove(), 2000);
     } catch (error) {
-      console.error('Translation error:', error);
-      progressText.textContent = 'Translation failed!';
-      progressContainer.style.backgroundColor = '#d93025';
-      setTimeout(() => progressContainer.remove(), 2000);
+        console.error('Translation error:', error);
+        progressText.textContent = 'Translation failed!';
+        progressContainer.style.backgroundColor = '#d93025';
+        setTimeout(() => progressContainer.remove(), 2000);
     }
 }
 
@@ -84,33 +84,32 @@ async function translateParagraphs(progressText, progressFill) {
     let translatedCount = 0;
     const totalElements = paragraphs.length;
     
-    for (let i = 0; i < paragraphs.length; i++) {
-      const element = paragraphs[i];
-      if (element.textContent.trim() && 
-          element.childNodes.length === 1 && 
-          element.childNodes[0].nodeType === Node.TEXT_NODE &&
-          !element.classList.contains('hinglish-translated')) {
-        
-        const originalText = element.textContent;
-        
-        try {
-          const response = await chrome.runtime.sendMessage({
-            action: "translateText",
-            text: originalText
-          });
-          
-          if (response && response !== "Please configure your API key first") {
-            element.textContent = response;
-            element.classList.add('hinglish-translated');
-            translatedCount++;
-            const progress = Math.round((translatedCount / totalElements) * 100);
-            progressText.textContent = `Translating page: ${progress}%`;
-            progressFill.style.width = `${progress}%`;
-          }
-        } catch (error) {
-          console.error('Translation error:', error);
+    for (const element of paragraphs) {
+        if (element.textContent.trim() && 
+            element.childNodes.length === 1 && 
+            element.childNodes[0].nodeType === Node.TEXT_NODE &&
+            !element.classList.contains('hinglish-translated')) {
+            
+            const originalText = element.textContent;
+            
+            try {
+                const response = await chrome.runtime.sendMessage({
+                    action: "translateText",
+                    text: originalText
+                });
+                
+                if (response && response !== "Please configure your API key first") {
+                    element.textContent = response;
+                    element.classList.add('hinglish-translated');
+                    translatedCount++;
+                    const progress = Math.round((translatedCount / totalElements) * 100);
+                    progressText.textContent = `Translating page: ${progress}%`;
+                    progressFill.style.width = `${progress}%`;
+                }
+            } catch (error) {
+                console.error('Translation error:', error);
+            }
         }
-      }
     }
     
     return translatedCount;
@@ -119,49 +118,49 @@ async function translateParagraphs(progressText, progressFill) {
 // Translate all text nodes (more aggressive approach)
 async function translateAllText(progressText, progressFill) {
     const walker = document.createTreeWalker(
-      document.body,
-      NodeFilter.SHOW_TEXT,
-      null,
-      false
+        document.body,
+        NodeFilter.SHOW_TEXT,
+        null,
+        false
     );
     
     let node;
     const textNodes = [];
     
     while (node = walker.nextNode()) {
-      if (node.textContent.trim() && 
-          node.parentElement && 
-          !node.parentElement.classList.contains('hinglish-translated')) {
-        textNodes.push(node);
-      }
+        if (node.textContent.trim() && 
+            node.parentElement && 
+            !node.parentElement.classList.contains('hinglish-translated')) {
+            textNodes.push(node);
+        }
     }
     
     let translatedCount = 0;
     const totalElements = textNodes.length;
     
     for (let i = 0; i < textNodes.length; i++) {
-      const node = textNodes[i];
-      const originalText = node.textContent;
-      
-      try {
-        const response = await chrome.runtime.sendMessage({
-          action: "translateText",
-          text: originalText
-        });
+        const node = textNodes[i];
+        const originalText = node.textContent;
         
-        if (response && response !== "Please configure your API key first") {
-          node.textContent = response;
-          if (node.parentElement) {
-            node.parentElement.classList.add('hinglish-translated');
-          }
-          translatedCount++;
-          const progress = Math.round((translatedCount / totalElements) * 100);
-          progressText.textContent = `Translating page: ${progress}%`;
-          progressFill.style.width = `${progress}%`;
+        try {
+            const response = await chrome.runtime.sendMessage({
+                action: "translateText",
+                text: originalText
+            });
+            
+            if (response && response !== "Please configure your API key first") {
+                node.textContent = response;
+                if (node.parentElement) {
+                    node.parentElement.classList.add('hinglish-translated');
+                }
+                translatedCount++;
+                const progress = Math.round((translatedCount / totalElements) * 100);
+                progressText.textContent = `Translating page: ${progress}%`;
+                progressFill.style.width = `${progress}%`;
+            }
+        } catch (error) {
+            console.error('Translation error:', error);
         }
-      } catch (error) {
-        console.error('Translation error:', error);
-      }
     }
     
     return translatedCount;

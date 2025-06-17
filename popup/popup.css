@@ -200,7 +200,7 @@ li:last-child {
   font-weight: 500;
   z-index: 1000;
   animation: slideDown 0.3s ease-out;
-  box-shadow: 0 2px 8px var(--shadow-color);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
 .success-message {
@@ -222,4 +222,36 @@ li:last-child {
     transform: translate(-50%, 0);
     opacity: 1;
   }
+}
+
+/* Output section styling */
+.output-section {
+  background: var(--section-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 15px;
+}
+
+.output-box {
+  background: var(--bg-color);
+  border: 1px solid var(--input-border);
+  border-radius: 4px;
+  padding: 10px;
+  min-height: 60px;
+  font-size: 14px;
+  color: var(--text-color);
+  white-space: pre-wrap;
+  margin-bottom: 10px;
+}
+
+#copyBtn {
+  font-size: 14px;
+  padding: 6px 12px;
+}
+
+#copyMsg {
+  margin-left: 10px;
+  font-size: 14px;
+  font-weight: bold;
+  color: var(--success-color);
 }
