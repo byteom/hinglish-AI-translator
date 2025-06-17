@@ -1,42 +1,82 @@
-🔧 Contribution Highlights
-1. 🧠 Tone Selector (Formal / Informal Translation)
-Added a dropdown toggle for users to choose translation tone.
 
-Passed tone preference to the AI translation logic (extensible for backend/API).
+# 🤝 Contribution Guidelines  
 
-✅ Enhances user personalization and tone sensitivity.
+Thank you for your interest in contributing to this project! We appreciate your time and effort in helping us improve.  
 
-2. 💡 Grammar Explanation Mode
-Introduced a new “Explain This” button.
+Before you begin, please take a moment to review these guidelines to ensure a smooth collaboration.  
 
-Displays basic grammar structure (tense, subject, object) using simple logic.
+---
 
-Helps language learners understand grammar behind Hinglish sentences.
+## 🚀 How to Contribute  
 
-3. ⚙️ Offline Fallback Logic
-Added a fallback mechanism when AI/LLM is unavailable.
+### 1. **Fork the Repository**  
+   Click the **"Fork"** button at the top right of this repository.  
 
-Checks for common Hinglish phrases and provides static translations.
+### 2. **Clone Your Fork**  
+   ```bash  
+   git clone https://github.com/your-username/repository-name.git  
+   cd repository-name  
+   ```  
 
-Ensures reliability even without network or API.
+### 3. **Create a New Branch**  
+   ```bash  
+   git checkout -b type/your-feature-name  
+   ```  
+   *(Use `feature/`, `fix/`, `docs/`, or `chore/` as prefixes for clarity.)*  
 
-4. 🧼 Code-Mixed Hinglish Cleanup
-Implemented utility to clean inputs like “school gaya tha” or “मैं school गया” by:
+### 4. **Make Your Changes**  
+   - Follow the project's coding style.  
+   - Test your changes thoroughly.  
 
-Removing extra symbols or mixing
+### 5. **Commit Your Changes**  
+   ```bash  
+   git add .  
+   git commit -m "Description of changes (e.g., 'Add: New validation logic')"  
+   ```  
+   *(Keep commit messages concise and descriptive.)*  
 
-Preparing input for better AI translation
+### 6. **Push to Your Fork**  
+   ```bash  
+   git push origin type/your-feature-name  
+   ```  
 
-Tackles a real-world linguistic issue in Hinglish use.
+### 7. **Open a Pull Request (PR)**  
+   - Go to the original repository and click **"Compare & Pull Request"**.  
+   - Fill in the PR template (if available) and link any related issues.  
 
-5. 🎨 UI/UX Enhancements
-Improved popup.html with:
+---
 
-Proper layout
+## 📋 Issue Rules  
 
-Responsive input/output areas
+- **Check for existing issues** before creating a new one.  
+- **Comment to request assignment** before working on an issue.  
+- **Only one contributor per issue** (first-come, first-served).  
+- If an issue is marked `assigned`, pick another or propose a new one.  
 
-Clear user interaction for toggles and buttons
+---
 
-Fully usable in small Chrome extension popups.
+## ✅ Pull Request Guidelines  
+
+- **Small, focused PRs** are preferred (1 feature/fix per PR).  
+- **Reference issues** using keywords like `Fixes #123`.  
+- **Include screenshots/GIFs** for UI-related changes.  
+- Ensure your branch is **up-to-date** with the `main`/`dev` branch before submitting.  
+
+---
+
+## 🛠 Code Quality  
+
+- **Lint your code** (run any project-specific linting tools).  
+- **Add tests** if applicable (unit/integration).  
+- **Document changes** in the README or relevant docs.  
+
+---
+
+## 📜 License  
+
+By contributing, you agree to license your work under this project's [LICENSE](LICENSE).  
+
+---
+
+Happy contributing! 🎉  
 
