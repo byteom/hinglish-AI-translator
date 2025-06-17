@@ -1,55 +1,89 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Hinglish Translator</title>
-  <link rel="stylesheet" href="popup.css">
+  <title>Hinglish AI Translator</title>
+  <style>
+    body { 
+      font-family: Arial; 
+      padding: 10px; 
+      width: 300px;
+      margin: 0;
+    }
+    textarea, select { 
+      width: 100%; 
+      margin: 5px 0; 
+      padding: 8px;
+      box-sizing: border-box;
+    }
+    button { 
+      width: 100%; 
+      margin: 5px 0; 
+      padding: 8px;
+      background-color: #1a73e8;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #0d5bba;
+    }
+    .output-box {
+      margin-top: 10px;
+      padding: 10px;
+      background: #f3f3f3;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      min-height: 50px;
+    }
+    .instructions {
+      margin: 15px 0;
+      padding: 10px;
+      background: #f8f9fa;
+      border-radius: 4px;
+    }
+    .instructions ol, .instructions ul {
+      padding-left: 20px;
+    }
+    .button-group {
+      display: flex;
+      gap: 5px;
+      margin-top: 10px;
+    }
+    .button-group button {
+      flex: 1;
+    }
+    #copyMsg {
+      display: none;
+      color: green;
+      font-size: 12px;
+      margin-left: 5px;
+      align-self: center;
+    }
+    h2 {
+      color: #1a73e8;
+      font-size: 18px;
+      margin-top: 0;
+    }
+  </style>
 </head>
 <body>
   <div class="container">
-    <div class="header">
-      <h1>Hinglish Translator</h1>
-      <div class="api-key-section">
-        <div class="api-key-status" id="apiKeyStatus">No API key configured</div>
-        <div class="api-key-actions">
-          <button id="changeApiKey" class="button">Change Key</button>
-          <button id="removeApiKey" class="button">Remove Key</button>
-        </div>
-      </div>
-    </div>
+    <h2>Hinglish AI Translator</h2>
 
-    <div class="api-key-container" id="apiKeyContainer" style="display: none;">
-      <div class="input-group">
-        <input type="password" id="apiKey" placeholder="Enter your Groq API key">
-        <button id="toggleApiKey" class="icon-button">👁️</button>
-      </div>
-      <button id="saveApiKey" class="button primary">Save API Key</button>
-    </div>
+    <textarea id="input-text" rows="4" placeholder="Enter Hinglish text..."></textarea>
 
-    <div class="settings-section">
-      <h2>Translation Settings</h2>
-      <div class="setting-group">
-        <label for="translationStyle">Translation Style:</label>
-        <select id="translationStyle" class="select">
-          <option value="hinglish">Hinglish (Default)</option>
-          <option value="hindi">Hindi (Devanagari)</option>
-          <option value="roman">Roman (Hindi in English)</option>
-          <option value="formal">Formal Hinglish</option>
-          <option value="casual">Casual Hinglish</option>
-        </select>
-      </div>
-      <div class="setting-group">
-        <label for="languageLevel">Language Level:</label>
-        <select id="languageLevel" class="select">
-          <option value="balanced">Balanced (Default)</option>
-          <option value="moreHindi">More Hindi</option>
-          <option value="moreEnglish">More English</option>
-        </select>
-      </div>
-      <button id="saveSettings" class="button primary">Save Settings</button>
-    </div>
+    <label for="tone-select">Select Tone:</label>
+    <select id="tone-select">
+      <option value="formal">Formal</option>
+      <option value="informal">Informal</option>
+    </select>
+
+    <button id="translate-btn">Translate</button>
+    <button id="explain-btn">Explain This</button>
 
     <div class="instructions">
-      <h2>How to Use</h2>
+      <h3>How to Use</h3>
       <ol>
         <li>Select text on any webpage</li>
         <li>Right-click and choose:
@@ -58,21 +92,21 @@
             <li>"Explain in Hinglish" for AI explanation</li>
           </ul>
         </li>
-        <li>The translation/explanation will appear in a popup</li>
+        <li>The translation/explanation will appear below</li>
       </ol>
     </div>
 
     <div class="output-section">
-      <h2>Output</h2>
-      <div id="outputText" class="output-box">Your translated or explained text will appear here.</div>
+      <h3>Output</h3>
+      <div id="output" class="output-box"></div>
       <div class="button-group">
-        <button id="copyBtn" class="button">Copy to Clipboard</button>
-        <button id="clearBtn" class="button">Clear</button>
-        <span id="copyMsg" style="display:none; color:green;">Copied!</span>
+        <button id="copyBtn">Copy to Clipboard</button>
+        <button id="clearBtn">Clear</button>
+        <span id="copyMsg">Copied!</span>
       </div>
     </div>
   </div>
 
-  <script src="popup.js"></script>
+  <script type="module" src="popup.js"></script>
 </body>
 </html>

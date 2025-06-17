@@ -1,5 +1,18 @@
+import { preprocessInput, offlineTranslate } from "../utils/translator.js";
+
 document.addEventListener('DOMContentLoaded', async () => {
-  // Get DOM elements
+  // Translation UI elements
+  const translateBtn = document.getElementById("translate-btn");
+  const explainBtn = document.getElementById("explain-btn");
+  const inputText = document.getElementById("input-text");
+  const toneSelect = document.getElementById("tone-select");
+  const outputDiv = document.getElementById("output");
+  const outputText = document.getElementById("outputText") || outputDiv;
+  const copyBtn = document.getElementById("copyBtn");
+  const copyMsg = document.getElementById("copyMsg");
+  const clearBtn = document.getElementById("clearBtn");
+
+  // Settings elements
   const apiKeyInput = document.getElementById('apiKey');
   const apiKeyContainer = document.getElementById('apiKeyContainer');
   const apiKeyStatus = document.getElementById('apiKeyStatus');
@@ -10,9 +23,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   const translationStyle = document.getElementById('translationStyle');
   const languageLevel = document.getElementById('languageLevel');
   const saveSettings = document.getElementById('saveSettings');
-  const outputText = document.getElementById("outputText");
-  const copyBtn = document.getElementById("copyBtn");
-  const copyMsg = document.getElementById("copyMsg");
 
   // Check if API key exists
   const { groqApiKey } = await chrome.storage.local.get('groqApiKey');
@@ -21,9 +31,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     return;
   }
 
-  // Show API key is configured
+  // Initialize UI
   apiKeyStatus.textContent = '✓ API Key Configured';
   apiKeyStatus.style.color = '#4CAF50';
+  apiKeyContainer.style.display = 'none';
 
   // Load existing translation settings
   const { translationSettings } = await chrome.storage.local.get('translationSettings');
@@ -32,8 +43,63 @@ document.addEventListener('DOMContentLoaded', async () => {
     languageLevel.value = translationSettings.level || 'balanced';
   }
 
-  // Toggle API key visibility
-  toggleApiKey.addEventListener('click', () => {
+  // Translation functions
+  async function translateText(text, tone) {
+    try {
+      const response = await chrome.runtime.sendMessage({
+        action: "translateText",
+        text: text,
+        tone: tone
+      });
+      return response || null;
+    } catch (error) {
+      console.error('Translation error:', error);
+      return null;
+    }
+  }
+
+  // Event listeners
+  translateBtn?.addEventListener("click", async () => {
+    let input = inputText.value.trim();
+    if (!input) return;
+
+    input = preprocessInput(input);
+    const tone = toneSelect.value;
+
+    let result = await translateText(input, tone);
+
+    if (!result) {
+      result = offlineTranslate(input) || "⚠️ Translation failed and no offline match found.";
+    }
+
+    if (outputText) {
+      outputText.innerText = result;
+    }
+  });
+
+  explainBtn?.addEventListener("click", async () => {
+    const input = inputText.value.trim();
+    if (!input) return;
+
+    try {
+      const explanation = await chrome.runtime.sendMessage({
+        action: "explainText",
+        text: input
+      });
+      
+      if (outputText) {
+        outputText.innerText = explanation || "Could not generate explanation";
+      }
+    } catch (error) {
+      console.error('Explanation error:', error);
+      if (outputText) {
+        outputText.innerText = "Error generating explanation";
+      }
+    }
+  });
+
+  // Settings management
+  toggleApiKey?.addEventListener('click', () => {
     if (apiKeyInput.type === 'password') {
       apiKeyInput.type = 'text';
       toggleApiKey.textContent = '🙈';
@@ -43,8 +109,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   });
 
-  // Save API key
-  saveApiKey.addEventListener('click', async () => {
+  saveApiKey?.addEventListener('click', async () => {
     const apiKey = apiKeyInput.value.trim();
     if (!apiKey) {
       showError('Please enter your API key');
@@ -53,48 +118,22 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     try {
       await chrome.storage.local.set({ groqApiKey: apiKey });
-
-      const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${apiKey}`
-        },
-        body: JSON.stringify({
-          messages: [
-            { role: "system", content: "You are a helpful assistant." },
-            { role: "user", content: "Hello" }
-          ],
-          model: "meta-llama/llama-4-scout-17b-16e-instruct",
-          temperature: 0.7,
-          max_tokens: 10
-        })
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.error?.message || `API error: ${response.status}`);
-      }
-
       showSuccess('API key saved successfully');
       apiKeyInput.value = '';
       apiKeyContainer.style.display = 'none';
       apiKeyStatus.textContent = '✓ API Key Configured';
       apiKeyStatus.style.color = '#4CAF50';
     } catch (error) {
-      console.error('API key validation error:', error);
-      await chrome.storage.local.remove('groqApiKey');
-      showError(error.message || 'Failed to validate API key');
+      console.error('Error saving API key:', error);
+      showError('Failed to save API key');
     }
   });
 
-  // Change API key
-  changeApiKey.addEventListener('click', () => {
+  changeApiKey?.addEventListener('click', () => {
     apiKeyContainer.style.display = 'block';
   });
 
-  // Remove API key
-  removeApiKey.addEventListener('click', async () => {
+  removeApiKey?.addEventListener('click', async () => {
     try {
       await chrome.storage.local.remove('groqApiKey');
       window.location.href = 'welcome.html';
@@ -104,14 +143,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   });
 
-  // Save settings
-  saveSettings.addEventListener('click', async () => {
+  saveSettings?.addEventListener('click', async () => {
     try {
       const settings = {
         style: translationStyle.value,
         level: languageLevel.value
       };
-
       await chrome.storage.local.set({ translationSettings: settings });
       showSuccess('Settings saved successfully');
     } catch (error) {
@@ -120,8 +157,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   });
 
-  // Copy to clipboard functionality
-  copyBtn.addEventListener("click", () => {
+  // Utility functions
+  copyBtn?.addEventListener("click", () => {
     if (outputText && outputText.textContent.trim()) {
       navigator.clipboard.writeText(outputText.textContent.trim()).then(() => {
         copyMsg.style.display = "inline";
@@ -131,9 +168,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       });
     }
   });
-});
 
-// Clear output box functionality
   clearBtn?.addEventListener('click', () => {
     if (outputText) {
       outputText.textContent = "";
@@ -141,25 +176,23 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   });
 
+  function showSuccess(message) {
+    const successDiv = document.createElement('div');
+    successDiv.className = 'success-message';
+    successDiv.textContent = message;
+    document.body.appendChild(successDiv);
+    setTimeout(() => {
+      successDiv.remove();
+    }, 3000);
+  }
 
-// Function to show success message
-function showSuccess(message) {
-  const successDiv = document.createElement('div');
-  successDiv.className = 'success-message';
-  successDiv.textContent = message;
-  document.body.appendChild(successDiv);
-  setTimeout(() => {
-    successDiv.remove();
-  }, 3000);
-}
-
-// Function to show error message
-function showError(message) {
-  const errorDiv = document.createElement('div');
-  errorDiv.className = 'error-message';
-  errorDiv.textContent = message;
-  document.body.appendChild(errorDiv);
-  setTimeout(() => {
-    errorDiv.remove();
-  }, 3000);
-}
+  function showError(message) {
+    const errorDiv = document.createElement('div');
+    errorDiv.className = 'error-message';
+    errorDiv.textContent = message;
+    document.body.appendChild(errorDiv);
+    setTimeout(() => {
+      errorDiv.remove();
+    }, 3000);
+  }
+});
