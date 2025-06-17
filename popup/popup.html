@@ -1,19 +1,23 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8">
   <title>Hinglish Translator</title>
   <link rel="stylesheet" href="popup.css">
 </head>
 <body>
   <div class="container">
-    <div class="header">
+    <!-- Top header with theme toggle -->
+    <div class="topbar">
       <h1>Hinglish Translator</h1>
-      <div class="api-key-section">
-        <div class="api-key-status" id="apiKeyStatus">No API key configured</div>
-        <div class="api-key-actions">
-          <button id="changeApiKey" class="button">Change Key</button>
-          <button id="removeApiKey" class="button">Remove Key</button>
-        </div>
+      <button id="themeToggle" class="theme-toggle-button" title="Toggle Dark/Light Mode">🌙</button>
+    </div>
+
+    <div class="api-key-section">
+      <div class="api-key-status" id="apiKeyStatus">No API key configured</div>
+      <div class="api-key-actions">
+        <button id="changeApiKey" class="button">Change Key</button>
+        <button id="removeApiKey" class="button">Remove Key</button>
       </div>
     </div>
 
@@ -48,28 +52,20 @@
       <button id="saveSettings" class="button primary">Save Settings</button>
     </div>
 
-    <div class="instructions">
-      <h2>How to Use</h2>
-      <ol>
-        <li>Select text on any webpage</li>
+    <!-- Instruction Box -->
+    <div class="instructions-box">
+      <h2>📘 How to Use</h2>
+      <ul>
+        <li>Select any text on a webpage.</li>
         <li>Right-click and choose:
           <ul>
-            <li>"Translate to Hinglish" for translation</li>
-            <li>"Explain in Hinglish" for AI explanation</li>
+            <li>“Translate to Hinglish” – for direct translation</li>
+            <li>“Explain in Hinglish” – for explanation using AI</li>
           </ul>
         </li>
-        <li>The translation/explanation will appear in a popup</li>
-      </ol>
-    </div>
-
-    <div class="output-section">
-      <h2>Output</h2>
-      <div id="outputText" class="output-box">Your translated or explained text will appear here.</div>
-      <div class="button-group">
-        <button id="copyBtn" class="button">Copy to Clipboard</button>
-        <button id="clearBtn" class="button">Clear</button>
-        <span id="copyMsg" style="display:none; color:green;">Copied!</span>
-      </div>
+        <li>The translated or explained text will show in a popup.</li>
+        <li><strong>Your API key will be stored locally and securely.</strong></li>
+      </ul>
     </div>
   </div>
 

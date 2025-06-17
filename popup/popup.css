@@ -1,8 +1,8 @@
 :root {
   --text-color: #202124;
-  --bg-color: #ffffff;
+  --bg-color: #fff9e6; /* Light yellow */
   --border-color: #e0e0e0;
-  --section-bg: #f8f9fa;
+  --section-bg: #fffef8;
   --input-border: #dadce0;
   --button-bg: #1a73e8;
   --button-hover: #1557b0;
@@ -14,22 +14,20 @@
   --label-color: #5f6368;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --text-color: #e8eaed;
-    --bg-color: #202124;
-    --border-color: #3c4043;
-    --section-bg: #2d2e31;
-    --input-border: #3c4043;
-    --button-bg: #1a73e8;
-    --button-hover: #1557b0;
-    --button-active: #174ea6;
-    --success-bg: #1e3a2f;
-    --success-color: #81c995;
-    --error-bg: #3c1a1a;
-    --error-color: #f28b82;
-    --label-color: #9aa0a6;
-  }
+body.dark-mode {
+  --text-color: #e8eaed;
+  --bg-color: #202124;
+  --border-color: #3c4043;
+  --section-bg: #2d2e31;
+  --input-border: #3c4043;
+  --button-bg: #1a73e8;
+  --button-hover: #1557b0;
+  --button-active: #174ea6;
+  --success-bg: #1e3a2f;
+  --success-color: #81c995;
+  --error-bg: #3c1a1a;
+  --error-color: #f28b82;
+  --label-color: #9aa0a6;
 }
 
 body {
@@ -38,6 +36,7 @@ body {
   font-family: Arial, sans-serif;
   background: var(--bg-color);
   color: var(--text-color);
+  font-size: 15px;
 }
 
 .container {
@@ -80,6 +79,7 @@ h2 {
   font-family: monospace;
   background: var(--bg-color);
   color: var(--text-color);
+  font-size: 14px;
 }
 
 .button-group {
@@ -172,15 +172,15 @@ select {
   color: var(--error-color);
 }
 
-ol {
-  margin: 0;
-  padding-left: 20px;
+ol, ul {
+  margin: 0 0 0 20px;
+  padding-left: 0;
+  color: var(--label-color);
+  font-size: 14px;
 }
 
 li {
   margin-bottom: 8px;
-  color: var(--label-color);
-  font-size: 14px;
 }
 
 li:last-child {
@@ -200,7 +200,7 @@ li:last-child {
   font-weight: 500;
   z-index: 1000;
   animation: slideDown 0.3s ease-out;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
 .success-message {
@@ -224,34 +224,27 @@ li:last-child {
   }
 }
 
-/* Output section styling */
-.output-section {
-  background: var(--section-bg);
-  border: 1px solid var(--border-color);
-  border-radius: 8px;
-  padding: 15px;
+/* Dark/Light Mode Toggle */
+.mode-toggle {
+  position: absolute;
+  top: 10px;
+  right: 10px;
 }
 
-.output-box {
-  background: var(--bg-color);
-  border: 1px solid var(--input-border);
-  border-radius: 4px;
-  padding: 10px;
-  min-height: 60px;
+.mode-toggle button {
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  color: var(--text-color);
+}
+
+/* Instructions Box */
+.instructions-box {
+  border: 1px solid var(--border-color);
+  background: var(--section-bg);
+  padding: 12px;
+  border-radius: 6px;
   font-size: 14px;
   color: var(--text-color);
-  white-space: pre-wrap;
-  margin-bottom: 10px;
-}
-
-#copyBtn {
-  font-size: 14px;
-  padding: 6px 12px;
-}
-
-#copyMsg {
-  margin-left: 10px;
-  font-size: 14px;
-  font-weight: bold;
-  color: var(--success-color);
 }

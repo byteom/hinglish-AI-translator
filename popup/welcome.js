@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     try {
       // Save API key first
       await chrome.storage.local.set({ groqApiKey: apiKey });
-      
+
       // Test the API key with a simple request
       const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
         method: 'POST',
@@ -54,6 +54,32 @@ document.addEventListener('DOMContentLoaded', async () => {
       // Remove invalid key
       await chrome.storage.local.remove(['groqApiKey']);
       errorMessage.textContent = error.message || 'Invalid API key. Please try again.';
+    }
+  });
+
+  // === Theme Toggle Setup ===
+  const themeToggle = document.getElementById('themeToggle');
+  const body = document.body;
+
+  let savedTheme = localStorage.getItem('theme');
+  if (!savedTheme) {
+    savedTheme = 'light-mode';
+    localStorage.setItem('theme', savedTheme);
+  }
+  body.classList.add(savedTheme);
+  themeToggle.textContent = savedTheme === 'dark-mode' ? '☀️' : '🌙';
+
+  themeToggle.addEventListener('click', () => {
+    if (body.classList.contains('dark-mode')) {
+      body.classList.remove('dark-mode');
+      body.classList.add('light-mode');
+      localStorage.setItem('theme', 'light-mode');
+      themeToggle.textContent = '🌙';
+    } else {
+      body.classList.remove('light-mode');
+      body.classList.add('dark-mode');
+      localStorage.setItem('theme', 'dark-mode');
+      themeToggle.textContent = '☀️';
     }
   });
 });
