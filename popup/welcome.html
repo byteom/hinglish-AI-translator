@@ -1,20 +1,107 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Setup Groq API Key</title>
+  <meta charset="UTF-8">
+  <title>Hinglish Translator - Welcome</title>
   <link rel="stylesheet" href="popup.css">
+  <style>
+    .dark-mode {
+      background-color: #222;
+      color: #f1f1f1;
+    }
+
+    .light-mode {
+      background-color: #fffbea;
+      color: #222;
+    }
+
+    .theme-toggle {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+    }
+
+    .setup {
+      max-width: 400px;
+      margin: 100px auto;
+      padding: 20px;
+      border-radius: 10px;
+      background-color: inherit;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .setup input {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 1rem;
+    }
+
+    .setup button {
+      margin-top: 15px;
+      padding: 10px 20px;
+      font-size: 1rem;
+      cursor: pointer;
+      border: none;
+      border-radius: 5px;
+      background-color: #4CAF50;
+      color: white;
+    }
+
+    .setup p {
+      margin-top: 20px;
+      font-size: 0.95rem;
+    }
+
+    .setup a {
+      color: inherit;
+      text-decoration: underline;
+    }
+  </style>
 </head>
-<body>
-  <div class="container">
-    <h1>Welcome to Hinglish Translator</h1>
-    <div class="setup">
-      <p>Please enter your Groq API key to enable translations:</p>
-      <input type="password" id="apiKeyInput" placeholder="Enter your Groq API key">
-      <button id="saveApiKey">Save Key</button>
-      <p class="note">Your key will be stored locally in Chrome and only used for translation requests.</p>
-      <p class="note">Don't have a key? <a href="https://groq.com/" target="_blank">Get one from Groq</a></p>
-    </div>
+<body class="light-mode">
+  <button class="theme-toggle" id="themeToggle">🌙</button>
+
+  <div class="setup">
+    <h2>Welcome to Hinglish Translator</h2>
+    <p>Please enter your Groq API key to enable translations:</p>
+
+    <input type="password" id="apiKeyInput" placeholder="Enter your Groq API key">
+    <button id="saveApiKey">Save Key</button>
+
+    <p>Your key will be stored locally in Chrome and only used for translation requests.</p>
+    <p>Don't have a key? <a href="https://console.groq.com/keys" target="_blank">Get one from Groq</a></p>
   </div>
+
+  <script>
+    const themeToggle = document.getElementById('themeToggle');
+    const body = document.body;
+
+    // Load saved theme from localStorage
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme) {
+      body.className = savedTheme;
+      themeToggle.textContent = savedTheme === 'dark-mode' ? '☀️' : '🌙';
+    }
+
+    themeToggle.addEventListener('click', () => {
+      if (body.classList.contains('dark-mode')) {
+        body.classList.replace('dark-mode', 'light-mode');
+        themeToggle.textContent = '🌙';
+        localStorage.setItem('theme', 'light-mode');
+      } else {
+        body.classList.replace('light-mode', 'dark-mode');
+        themeToggle.textContent = '☀️';
+        localStorage.setItem('theme', 'dark-mode');
+      }
+    });
+  </script>
   <script src="welcome.js"></script>
 </body>
 </html>
