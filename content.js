@@ -47,8 +47,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     const paragraphs = document.querySelectorAll('p, h1, h2, h3, h4, h5, h6, li, span, div');
     let translatedCount = 0;
     
-    for (let i = 0; i < paragraphs.length; i++) {
-      const element = paragraphs[i];
+    for (const element of paragraphs) {
       if (element.textContent.trim() && 
           element.childNodes.length === 1 && 
           element.childNodes[0].nodeType === Node.TEXT_NODE &&
@@ -56,19 +55,21 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         
         const originalText = element.textContent;
         
-        try {
-          const response = await chrome.runtime.sendMessage({
-            action: "translateText",
-            text: originalText
-          });
-          
-          if (response && response !== "Please configure your API key first") {
-            element.textContent = response;
-            element.classList.add('hinglish-translated');
-            translatedCount++;
+        const response = await getTranslatedText(originalText);
+        async function getTranslatedText(originalText) {
+          try {
+            const response = await chrome.runtime.sendMessage({
+              action: "translateText",
+              text: originalText
+            });
+        
+            if (response && response !== "Please configure your API key first") {
+              return response;
+            }
+          } catch (error) {
+            console.error('Translation error:', error);
           }
-        } catch (error) {
-          console.error('Translation error:', error);
+          return null;
         }
       }
     }
