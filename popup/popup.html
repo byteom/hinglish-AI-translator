@@ -3,28 +3,109 @@
 <head>
   <title>Hinglish AI Translator</title>
   <style>
-    body { font-family: Arial; padding: 10px; width: 300px; }
-    textarea, select { width: 100%; margin: 5px 0; }
-    button { width: 100%; margin: 5px 0; }
-    #output { margin-top: 10px; padding: 8px; background: #f3f3f3; border: 1px solid #ccc; }
+    body { 
+      font-family: Arial; 
+      padding: 10px; 
+      width: 300px;
+      margin: 0;
+    }
+    textarea, select { 
+      width: 100%; 
+      margin: 5px 0; 
+      padding: 8px;
+      box-sizing: border-box;
+    }
+    button { 
+      width: 100%; 
+      margin: 5px 0; 
+      padding: 8px;
+      background-color: #1a73e8;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #0d5bba;
+    }
+    .output-box {
+      margin-top: 10px;
+      padding: 10px;
+      background: #f3f3f3;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      min-height: 50px;
+    }
+    .instructions {
+      margin: 15px 0;
+      padding: 10px;
+      background: #f8f9fa;
+      border-radius: 4px;
+    }
+    .instructions ol, .instructions ul {
+      padding-left: 20px;
+    }
+    .button-group {
+      display: flex;
+      gap: 5px;
+      margin-top: 10px;
+    }
+    .button-group button {
+      flex: 1;
+    }
+    #copyMsg {
+      display: none;
+      color: green;
+      font-size: 12px;
+      margin-left: 5px;
+      align-self: center;
+    }
+    h2 {
+      color: #1a73e8;
+      font-size: 18px;
+      margin-top: 0;
+    }
   </style>
 </head>
 <body>
-  <h2>Hinglish Translator</h2>
+  <div class="container">
+    <h2>Hinglish AI Translator</h2>
 
-  <textarea id="input-text" rows="4" placeholder="Enter Hinglish text..."></textarea>
+    <textarea id="input-text" rows="4" placeholder="Enter Hinglish text..."></textarea>
 
-  <label for="tone-select">Select Tone:</label>
-  <select id="tone-select">
-    <option value="formal">Formal</option>
-    <option value="informal">Informal</option>
-  </select>
+    <label for="tone-select">Select Tone:</label>
+    <select id="tone-select">
+      <option value="formal">Formal</option>
+      <option value="informal">Informal</option>
+    </select>
 
-  <button id="translate-btn">Translate</button>
-  <button id="explain-btn">Explain This</button>
+    <button id="translate-btn">Translate</button>
+    <button id="explain-btn">Explain This</button>
 
-  <div id="output"></div>
-  <p id="grammar-explanation"></p>
+    <div class="instructions">
+      <h3>How to Use</h3>
+      <ol>
+        <li>Select text on any webpage</li>
+        <li>Right-click and choose:
+          <ul>
+            <li>"Translate to Hinglish" for translation</li>
+            <li>"Explain in Hinglish" for AI explanation</li>
+          </ul>
+        </li>
+        <li>The translation/explanation will appear below</li>
+      </ol>
+    </div>
+
+    <div class="output-section">
+      <h3>Output</h3>
+      <div id="output" class="output-box"></div>
+      <div class="button-group">
+        <button id="copyBtn">Copy to Clipboard</button>
+        <button id="clearBtn">Clear</button>
+        <span id="copyMsg">Copied!</span>
+      </div>
+    </div>
+  </div>
 
   <script type="module" src="popup.js"></script>
 </body>
