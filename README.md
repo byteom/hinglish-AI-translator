@@ -20,14 +20,14 @@ A powerful and intuitive Chrome extension that brings seamless translation and A
 
 ### 🤖 AI-Powered Features
 - **Smart Translation** - Context-aware translations that maintain the original meaning
-- **AI Explanations** - Get detailed explanations of selected text in your preferred language style
+- **AI Explanations** - Get detailed explanations of the selected text in your preferred language style
 - **Natural Language Processing** - Powered by advanced Groq AI models
 
 ### 🎯 Easy to Use
 - Right-click on any selected text
 - Choose between translation or explanation
-- Instant results in a beautiful popup
-- No page reload required
+- View instant results in a sleek popup window
+- No need to reload the page
 
 ## 🛠️ Technical Implementation
 
@@ -123,4 +123,15 @@ For support, please open an issue in the repository or contact the maintainers.
 
 ---
 
+<<<<<<< patch-1
 Made with ❤️ by [Om Singh] - A passionate developer dedicated to making language translation accessible to everyone!
+=======
+ Crafted with ❤️ by [Om Singh] - A passionate developer dedicated to making language translation accessible to everyone!
+```
+
+Key changes made:
+1. Updated the "Contributing" section link to point to `CONTRIBUTING.md`
+2. Updated the "License" section link to point to `LICENSE.md`
+3. Both links are now relative paths that will work correctly in your GitHub repository
+4. Maintained all existing content and formatting while just updating these two links
+>>>>>>> main
