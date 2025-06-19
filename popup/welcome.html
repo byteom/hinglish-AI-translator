@@ -79,29 +79,6 @@
     <p>Don't have a key? <a href="https://console.groq.com/keys" target="_blank">Get one from Groq</a></p>
   </div>
 
-  <script>
-    const themeToggle = document.getElementById('themeToggle');
-    const body = document.body;
-
-    // Load saved theme from localStorage
-    const savedTheme = localStorage.getItem('theme');
-    if (savedTheme) {
-      body.className = savedTheme;
-      themeToggle.textContent = savedTheme === 'dark-mode' ? '☀️' : '🌙';
-    }
-
-    themeToggle.addEventListener('click', () => {
-      if (body.classList.contains('dark-mode')) {
-        body.classList.replace('dark-mode', 'light-mode');
-        themeToggle.textContent = '🌙';
-        localStorage.setItem('theme', 'light-mode');
-      } else {
-        body.classList.replace('light-mode', 'dark-mode');
-        themeToggle.textContent = '☀️';
-        localStorage.setItem('theme', 'dark-mode');
-      }
-    });
-  </script>
   <script src="welcome.js"></script>
 </body>
 </html>
