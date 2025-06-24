@@ -1,3 +1,4 @@
+
 document.addEventListener('DOMContentLoaded', async () => {
   // Theme toggle logic
   const themeToggleBtn = document.getElementById('themeToggle');
@@ -66,8 +67,11 @@ document.addEventListener('DOMContentLoaded', async () => {
       showError('Please enter your API key');
       return;
     }
+    
 
     try {
+      showLoading('🔄 Validating API key...');
+      
       await chrome.storage.local.set({ groqApiKey: apiKey });
 
       const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
@@ -89,6 +93,7 @@ document.addEventListener('DOMContentLoaded', async () => {
           max_tokens: 10
         })
       });
+      hideLoading();
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
@@ -101,6 +106,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       apiKeyStatus.textContent = '✓ API Key Configured';
       apiKeyStatus.style.color = '#4CAF50';
     } catch (error) {
+      hideLoading();
       console.error('API key validation error:', error);
       await chrome.storage.local.remove('groqApiKey');
       showError(error.message || 'Failed to validate API key');
@@ -126,13 +132,16 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Save translation settings
   saveSettings.addEventListener('click', async () => {
     try {
+      showLoading('🔄 Saving settings...');
       const settings = {
         style: translationStyle.value,
         level: languageLevel.value
       };
       await chrome.storage.local.set({ translationSettings: settings });
+      hideLoading();
       showSuccess('Settings saved successfully');
     } catch (error) {
+      hideLoading();
       console.error('Error saving settings:', error);
       showError('Failed to save settings');
     }
@@ -159,4 +168,22 @@ function showError(message) {
   setTimeout(() => {
     errorDiv.remove();
   }, 3000);
+}
+
+
+// Show loading message
+function showLoading(message = '🔄 Processing...') {
+  const loadingDiv = document.getElementById('loadingMessage');
+  if (loadingDiv) {
+    loadingDiv.textContent = message;
+    loadingDiv.style.display = 'block';
+  }
+}
+
+// Hide loading message
+function hideLoading() {
+  const loadingDiv = document.getElementById('loadingMessage');
+  if (loadingDiv) {
+    loadingDiv.style.display = 'none';
+  }
 }
