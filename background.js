@@ -175,7 +175,7 @@ function getTranslationPrompt(style, level) {
 }
 
 // Function to translate text using Groq API
-async function translateText(text) {
+async function translateText(text, retries = 2) {
   const { groqApiKey, translationSettings } = await chrome.storage.local.get([
     "groqApiKey",
     "translationSettings",
@@ -189,44 +189,66 @@ async function translateText(text) {
   const level = translationSettings?.level || "balanced";
   const prompt = getTranslationPrompt(style, level);
 
-  const response = await fetch(
-    "https://api.groq.com/openai/v1/chat/completions",
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${groqApiKey}`,
-      },
-      body: JSON.stringify({
-        messages: [
-          { role: "system", content: prompt },
-          { role: "user", content: text },
-        ],
-        model: "meta-llama/llama-4-scout-17b-16e-instruct",
-        temperature: 0.7,
-        max_tokens: 1000,
-      }),
+  const payload = {
+    messages: [
+      { role: "system", content: prompt },
+      { role: "user", content: text },
+    ],
+    model: "meta-llama/llama-4-scout-17b-16e-instruct",
+    temperature: 0.7,
+    max_tokens: 1000,
+  };
+
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    try {
+      const response = await fetch(
+        "https://api.groq.com/openai/v1/chat/completions",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${groqApiKey}`,
+          },
+          body: JSON.stringify(payload),
+        }
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+
+        // Retry only on server (5xx) errors
+        if (response.status >= 500 && attempt < retries) {
+          console.warn(`Retrying translateText (attempt ${attempt + 1})`);
+          continue;
+        }
+
+        throw new Error(
+          errorData.error?.message || `API error: ${response.status}`
+        );
+      }
+
+      const data = await response.json();
+      const translatedText = data.choices[0].message.content.trim();
+
+      if (!translatedText) {
+        throw new Error("Empty translation received");
+      }
+
+      return translatedText;
+
+    } catch (error) {
+      if (attempt === retries) {
+        throw error;
+      }
+      console.warn(`translateText failed on attempt ${attempt + 1}: ${error.message}`);
     }
-  );
-
-  if (!response.ok) {
-    const errorData = await response.json().catch(() => ({}));
-    throw new Error(errorData.error?.message || `API error: ${response.status}`);
   }
-
-  const data = await response.json();
-  const translatedText = data.choices[0].message.content.trim();
-
-  if (!translatedText) {
-    throw new Error("Empty translation received");
-  }
-
-  return translatedText;
 }
 
 
+
 // Function to explain text using Groq API
-async function explainText(text) {
+async function explainText(text, retries = 2) {
   const { groqApiKey, translationSettings } = await chrome.storage.local.get([
     "groqApiKey",
     "translationSettings",
@@ -242,51 +264,75 @@ async function explainText(text) {
   const prompt = `You are an AI assistant that explains concepts in ${
     style === "hindi" ? "Hindi" : "Hinglish"
   }. 
-    Provide a clear and detailed explanation of the given text. 
-    Make it easy to understand and use ${
-      level === "moreHindi"
-        ? "more Hindi words"
-        : level === "moreEnglish"
-        ? "more English words"
-        : "a balanced mix of Hindi and English words"
-    }.
-    Format your response in a clear, structured way with bullet points or short paragraphs.
-    Only respond with the explanation, no additional text.`;
+  Provide a clear and detailed explanation of the given text. 
+  Make it easy to understand and use ${
+    level === "moreHindi"
+      ? "more Hindi words"
+      : level === "moreEnglish"
+      ? "more English words"
+      : "a balanced mix of Hindi and English words"
+  }.
+  Format your response in a clear, structured way with bullet points or short paragraphs.
+  Only respond with the explanation, no additional text.`;
 
-  const response = await fetch(
-    "https://api.groq.com/openai/v1/chat/completions",
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${groqApiKey}`,
-      },
-      body: JSON.stringify({
-        messages: [
-          { role: "system", content: prompt },
-          { role: "user", content: text },
-        ],
-        model: "meta-llama/llama-4-scout-17b-16e-instruct",
-        temperature: 0.7,
-        max_tokens: 1000,
-      }),
+  const payload = {
+    messages: [
+      { role: "system", content: prompt },
+      { role: "user", content: text },
+    ],
+    model: "meta-llama/llama-4-scout-17b-16e-instruct",
+    temperature: 0.7,
+    max_tokens: 1000,
+  };
+
+  // Retry loop
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    try {
+      const response = await fetch(
+        "https://api.groq.com/openai/v1/chat/completions",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${groqApiKey}`,
+          },
+          body: JSON.stringify(payload),
+        }
+      );
+
+      // If response not OK
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+
+        // Retry only if server error (5xx)
+        if (response.status >= 500 && attempt < retries) {
+          console.warn(`Retrying explainText (attempt ${attempt + 1})`);
+          continue;
+        }
+
+        throw new Error(errorData.error?.message || `API error: ${response.status}`);
+      }
+
+      // Successful response
+      const data = await response.json();
+      const explanation = data.choices[0].message.content.trim();
+
+      if (!explanation) {
+        throw new Error("Empty explanation received");
+      }
+
+      return explanation;
+
+    } catch (error) {
+      // Retry on failure, unless it's the last attempt
+      if (attempt === retries) {
+        throw error;
+      }
+      console.warn(`explainText failed on attempt ${attempt + 1}: ${error.message}`);
     }
-  );
-
-  if (!response.ok) {
-    const errorData = await response.json().catch(() => ({}));
-    throw new Error(errorData.error?.message || `API error: ${response.status}`);
   }
-
-  const data = await response.json();
-  const explanation = data.choices[0].message.content.trim();
-
-  if (!explanation) {
-    throw new Error("Empty explanation received");
-  }
-
-  return explanation;
 }
+
 
 
 // Function to show loading popup
