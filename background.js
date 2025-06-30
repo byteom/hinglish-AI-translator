@@ -73,7 +73,6 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
       });
     } catch (error) {
       console.error("Context menu translation error:", error);
-      // Show error in popup
       chrome.scripting.executeScript({
         target: { tabId: tab.id },
         func: showErrorPopup,
