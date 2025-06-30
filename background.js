@@ -73,7 +73,6 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
       });
     } catch (error) {
       console.error("Context menu translation error:", error);
-      // Show error in popup
       chrome.scripting.executeScript({
         target: { tabId: tab.id },
         func: showErrorPopup,
@@ -190,53 +189,41 @@ async function translateText(text) {
   const level = translationSettings?.level || "balanced";
   const prompt = getTranslationPrompt(style, level);
 
-  try {
-    const response = await fetch(
-      "https://api.groq.com/openai/v1/chat/completions",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${groqApiKey}`,
-        },
-        body: JSON.stringify({
-          messages: [
-            {
-              role: "system",
-              content: prompt,
-            },
-            {
-              role: "user",
-              content: text,
-            },
-          ],
-          model: "meta-llama/llama-4-scout-17b-16e-instruct",
-          temperature: 0.7,
-          max_tokens: 1000,
-        }),
-      }
-    );
-
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      throw new Error(
-        errorData.error?.message || `API error: ${response.status}`
-      );
+  const response = await fetch(
+    "https://api.groq.com/openai/v1/chat/completions",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${groqApiKey}`,
+      },
+      body: JSON.stringify({
+        messages: [
+          { role: "system", content: prompt },
+          { role: "user", content: text },
+        ],
+        model: "meta-llama/llama-4-scout-17b-16e-instruct",
+        temperature: 0.7,
+        max_tokens: 1000,
+      }),
     }
+  );
 
-    const data = await response.json();
-    const translatedText = data.choices[0].message.content.trim();
-
-    if (!translatedText) {
-      throw new Error("Empty translation received");
-    }
-
-    return translatedText;
-  } catch (error) {
-    console.error("Translation error:", error);
-    throw error;
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.error?.message || `API error: ${response.status}`);
   }
+
+  const data = await response.json();
+  const translatedText = data.choices[0].message.content.trim();
+
+  if (!translatedText) {
+    throw new Error("Empty translation received");
+  }
+
+  return translatedText;
 }
+
 
 // Function to explain text using Groq API
 async function explainText(text) {
@@ -251,6 +238,7 @@ async function explainText(text) {
 
   const style = translationSettings?.style || "hinglish";
   const level = translationSettings?.level || "balanced";
+
   const prompt = `You are an AI assistant that explains concepts in ${
     style === "hindi" ? "Hindi" : "Hinglish"
   }. 
@@ -265,53 +253,41 @@ async function explainText(text) {
     Format your response in a clear, structured way with bullet points or short paragraphs.
     Only respond with the explanation, no additional text.`;
 
-  try {
-    const response = await fetch(
-      "https://api.groq.com/openai/v1/chat/completions",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${groqApiKey}`,
-        },
-        body: JSON.stringify({
-          messages: [
-            {
-              role: "system",
-              content: prompt,
-            },
-            {
-              role: "user",
-              content: text,
-            },
-          ],
-          model: "meta-llama/llama-4-scout-17b-16e-instruct",
-          temperature: 0.7,
-          max_tokens: 1000,
-        }),
-      }
-    );
-
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      throw new Error(
-        errorData.error?.message || `API error: ${response.status}`
-      );
+  const response = await fetch(
+    "https://api.groq.com/openai/v1/chat/completions",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${groqApiKey}`,
+      },
+      body: JSON.stringify({
+        messages: [
+          { role: "system", content: prompt },
+          { role: "user", content: text },
+        ],
+        model: "meta-llama/llama-4-scout-17b-16e-instruct",
+        temperature: 0.7,
+        max_tokens: 1000,
+      }),
     }
+  );
 
-    const data = await response.json();
-    const explanation = data.choices[0].message.content.trim();
-
-    if (!explanation) {
-      throw new Error("Empty explanation received");
-    }
-
-    return explanation;
-  } catch (error) {
-    console.error("Explanation error:", error);
-    throw error;
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.error?.message || `API error: ${response.status}`);
   }
+
+  const data = await response.json();
+  const explanation = data.choices[0].message.content.trim();
+
+  if (!explanation) {
+    throw new Error("Empty explanation received");
+  }
+
+  return explanation;
 }
+
 
 // Function to show loading popup
 function showLoadingPopup() {
